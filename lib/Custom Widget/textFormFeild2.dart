@@ -7,7 +7,7 @@ class MyTextFormField2 extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final String labelText;
-  final Icon icon;
+  final IconButton icon;
 
   @override
   State<MyTextFormField2> createState() => _MyTextFormField2State();
@@ -27,6 +27,7 @@ class _MyTextFormField2State extends State<MyTextFormField2> {
        // border:Border.all(color: Color(0xFFF5F7FB),width: 2),
       ),
       child: TextFormField(
+        controller: widget.controller,
         decoration: InputDecoration(
           iconColor: Color(0xFFF5F7FB),
           labelText: widget.labelText,

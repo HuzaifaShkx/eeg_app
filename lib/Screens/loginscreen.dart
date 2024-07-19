@@ -1,3 +1,4 @@
+import 'package:eeg_app/API/APIHandler.dart';
 import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/loginTextFormField.dart';
@@ -67,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ,
           SizedBox(height: 20,),
           Button2(text: "Login", onTap: (){
+            APIHandler().login(_contUsername.text, _contPassword.text);
             print("Login");
           }),
           SizedBox(height: 20,),

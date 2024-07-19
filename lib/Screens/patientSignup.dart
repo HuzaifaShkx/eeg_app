@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:eeg_app/Custom%20Widget/button2.dart';
+import 'package:eeg_app/Custom%20Widget/genderField.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild1.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild2.dart';
+import 'package:eeg_app/Screens/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -20,6 +22,24 @@ class _PatientSignUpState extends State<PatientSignUp> {
   TextEditingController _contGender = TextEditingController();
   TextEditingController _contDob = TextEditingController();
   File? _img;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != DateTime.now()) {
+      setState(() {
+        _contDob.text = "${picked.day}/${picked.month}/${picked.year}"; // Format date as needed
+      });
+    }
+    setState(() {
+      
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,35 +99,39 @@ class _PatientSignUpState extends State<PatientSignUp> {
             hintText: "Password",
             labelText: "Password",
           ),
-          MyTextFormField(
+          GenderFormField(
             controller: _contGender,
-            hintText: "Gender",
+            hintText: "Select Gender",
             labelText: "Gender",
           ),
           MyTextFormField(
             controller: _contGender,
-            hintText: "Gender",
+            hintText: "Height",
             labelText: "Height",
           ),
           MyTextFormField(
             controller: _contGender,
-            hintText: "Gender",
+            hintText: "Weight",
             labelText: "Weight",
           ),
           MyTextFormField2(
               controller: _contDob,
               hintText: "DOB",
               labelText: "DOB",
-              icon: Icon(
+              icon: IconButton(onPressed: (){
+                _selectDate(context);
+              }, icon: Icon(
                 Icons.calendar_today_outlined,
                 color: Color(0xFF7C0909),
-              )),
+              )),),
           SizedBox(
             height: 20,
           ),
           Button2(
             text: "SignUp",
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
           ),
         ]),
       ),
