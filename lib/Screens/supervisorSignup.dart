@@ -6,6 +6,7 @@ import 'package:eeg_app/Custom%20Widget/genderField.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild1.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild2.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
+import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -83,7 +84,7 @@ class _SupervisorSignupState extends State<SupervisorSignup> {
             "Enter Your Details",
             style: TextStyle(
                 fontSize: 18,
-                color: Color(0xFF7C0909),
+                color: maincolor,
                 fontWeight: FontWeight.w500),
             textAlign: TextAlign.left,
           ),
@@ -116,7 +117,7 @@ class _SupervisorSignupState extends State<SupervisorSignup> {
                 
               }, icon: Icon(
                 Icons.calendar_today_outlined,
-                color: Color(0xFF7C0909),
+                color: maincolor,
               )),),
           SizedBox(
             height: 20,

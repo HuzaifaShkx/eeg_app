@@ -3,7 +3,11 @@ import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/loginTextFormField.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild1.dart';
+import 'package:eeg_app/Screens/doctorDash.dart';
+import 'package:eeg_app/Screens/patientDash.dart';
 import 'package:eeg_app/Screens/roleScreen.dart';
+import 'package:eeg_app/Screens/supervisorDash.dart';
+import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Container(
             height: 300,
             width: width,
-            color: Color(0xFF7C0909),
+            color: maincolor,
             child: Column(
               children: [
                 SizedBox(height: 50,),
@@ -56,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20),bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
           ),
           child: Column(children: [
-          Text("LOGIN",style: TextStyle(color: Color(0xFF7C0909),fontWeight: FontWeight.w600,fontSize: 24)),
+          Text("LOGIN",style: TextStyle(color: maincolor,fontWeight: FontWeight.w600,fontSize: 24)),
           SizedBox(height: 20,),
           LoginMyTextFormField(controller: _contUsername, hintText: "User name or Email", labelText: "Username", 
           //icon: Icon(Icons.email)
@@ -67,9 +71,19 @@ class _LoginScreenState extends State<LoginScreen> {
           )
           ,
           SizedBox(height: 20,),
-          Button2(text: "Login", onTap: (){
-            APIHandler().login(_contUsername.text, _contPassword.text);
-            print("Login");
+          Button2(text: "Login", onTap: () async {
+           String r=await APIHandler().login(_contUsername.text, _contPassword.text);
+            if(r=="patient"){
+              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => PatientDash())));
+            }else if(r=="doctor"){
+              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DoctorDash())));
+            }else if(r=="supervisor"){
+              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => SupervisorDash())));
+            }else
+            {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Invalid username or password"),duration: Duration(seconds: 3),backgroundColor: maincolor,));
+            }
+
           }),
           SizedBox(height: 20,),
           Text("Don't have an account?",style: TextStyle(color: Colors.black),),

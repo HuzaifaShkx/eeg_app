@@ -30,6 +30,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
           //border:Border.all(color: Color(0xFFF5F7FB),width: 2),
         ),
         child: TextFormField(
+          controller: widget.controller,
           decoration: InputDecoration(
             iconColor: Color(0xFFF5F7FB),
             labelText: widget.labelText,

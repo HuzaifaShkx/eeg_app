@@ -3,6 +3,7 @@
 import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
 import 'package:eeg_app/Screens/roleScreen.dart';
+import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class StartHomePage extends StatelessWidget {
@@ -20,7 +21,7 @@ class StartHomePage extends StatelessWidget {
           height: 450,
           width: width,
           decoration: BoxDecoration(
-            color: Color(0xFF7C0909),
+            color: maincolor,
           ),
           child: Column(
           children: [
