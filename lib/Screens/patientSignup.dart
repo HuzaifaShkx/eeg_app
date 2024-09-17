@@ -49,92 +49,94 @@ class _PatientSignUpState extends State<PatientSignUp> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                backgroundImage: _img == null
-                    ? AssetImage("assets/images/person.png")
-                    : FileImage(_img!) as ImageProvider,
-              ),
-              Padding(
-                  padding: EdgeInsets.only(top: 15),
-                  child: Row(children: [
-                    SizedBox(
-                      width: 20,
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        XFile? _image = await ImagePicker()
-                            .pickImage(source: ImageSource.gallery);
-                        setState(() {
-                          _img = File(_image!.path);
-                        });
-                      },
-                      icon: Icon(Icons.camera_alt_outlined),
-                      alignment: Alignment.bottomRight,
-                    )
-                  ])),
-            ],
-          ),
-          Text(
-            "Enter Your Details",
-            style: TextStyle(
-                fontSize: 18,
-                color: maincolor,
-                fontWeight: FontWeight.w500),
-            textAlign: TextAlign.left,
-          ),
-          MyTextFormField(
-            controller: _contName,
-            hintText: "Full Name",
-            labelText: "Full Name",
-          ),
-          MyTextFormField(
-            controller: _contEmail,
-            hintText: "Email",
-            labelText: "Email",
-          ),
-          MyTextFormField(
-            controller: _contPassword,
-            hintText: "Password",
-            labelText: "Password",
-          ),
-          GenderFormField(
-            controller: _contGender,
-            hintText: "Select Gender",
-            labelText: "Gender",
-          ),
-          MyTextFormField(
-            controller: _contGender,
-            hintText: "Height",
-            labelText: "Height",
-          ),
-          MyTextFormField(
-            controller: _contGender,
-            hintText: "Weight",
-            labelText: "Weight",
-          ),
-          MyTextFormField2(
-              controller: _contDob,
-              hintText: "DOB",
-              labelText: "DOB",
-              icon: IconButton(onPressed: (){
-                _selectDate(context);
-              }, icon: Icon(
-                Icons.calendar_today_outlined,
-                color: maincolor,
-              )),),
-          SizedBox(
-            height: 20,
-          ),
-          Button2(
-            text: "SignUp",
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
-            },
-          ),
-        ]),
+        child: SingleChildScrollView(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Stack(
+              children: [
+                CircleAvatar(
+                  backgroundImage: _img == null
+                      ? AssetImage("assets/images/person.png")
+                      : FileImage(_img!) as ImageProvider,
+                ),
+                Padding(
+                    padding: EdgeInsets.only(top: 15),
+                    child: Row(children: [
+                      SizedBox(
+                        width: 20,
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          XFile? _image = await ImagePicker()
+                              .pickImage(source: ImageSource.gallery);
+                          setState(() {
+                            _img = File(_image!.path);
+                          });
+                        },
+                        icon: Icon(Icons.camera_alt_outlined),
+                        alignment: Alignment.bottomRight,
+                      )
+                    ])),
+              ],
+            ),
+            Text(
+              "Enter Your Details",
+              style: TextStyle(
+                  fontSize: 18,
+                  color: maincolor,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.left,
+            ),
+            MyTextFormField(
+              controller: _contName,
+              hintText: "Full Name",
+              labelText: "Full Name",
+            ),
+            MyTextFormField(
+              controller: _contEmail,
+              hintText: "Email",
+              labelText: "Email",
+            ),
+            MyTextFormField(
+              controller: _contPassword,
+              hintText: "Password",
+              labelText: "Password",
+            ),
+            GenderFormField(
+              controller: _contGender,
+              hintText: "Select Gender",
+              labelText: "Gender",
+            ),
+            MyTextFormField(
+              controller: _contGender,
+              hintText: "Height",
+              labelText: "Height",
+            ),
+            MyTextFormField(
+              controller: _contGender,
+              hintText: "Weight",
+              labelText: "Weight",
+            ),
+            MyTextFormField2(
+                controller: _contDob,
+                hintText: "DOB",
+                labelText: "DOB",
+                icon: IconButton(onPressed: (){
+                  _selectDate(context);
+                }, icon: Icon(
+                  Icons.calendar_today_outlined,
+                  color: maincolor,
+                )),),
+            SizedBox(
+              height: 20,
+            ),
+            Button2(
+              text: "SignUp",
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+            ),
+          ]),
+        ),
       ),
     );
   }

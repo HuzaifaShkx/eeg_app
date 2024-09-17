@@ -13,7 +13,7 @@ class Button2 extends StatelessWidget {
     return InkWell(
       onTap: this.onTap,
       child: Container(
-        width: width-300,
+        width: width-200,
         height: height,
         alignment: Alignment.center,
         decoration: BoxDecoration(

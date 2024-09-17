@@ -1,6 +1,12 @@
 import 'package:eeg_app/Screens/Start_home_page.dart';
+import 'package:eeg_app/Screens/doctorDash.dart';
+import 'package:eeg_app/Screens/doctor_appointments.dart';
+import 'package:eeg_app/Screens/doctor_patients.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
+import 'package:eeg_app/Screens/patient_detail.dart';
 import 'package:eeg_app/Screens/roleScreen.dart';
+import 'package:eeg_app/Screens/splash_Screen.dart';
+import 'package:eeg_app/Screens/supervisor_upload_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -34,7 +41,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF7C0909)),
         useMaterial3: true,
       ),
-      home: LoginScreen(),
+      home: SplashScreen(),
     );
   }
 }

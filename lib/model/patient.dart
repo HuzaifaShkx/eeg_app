@@ -11,6 +11,8 @@ class Patient extends User {
     String? id,
     String? imgpath,
     String? name,
+    String? password,
+    String? role,
     this.height,
     this.weight,
   }) : super(
@@ -18,8 +20,10 @@ class Patient extends User {
           dob: dob,
           gender: gender,
           id: id,
-          imgpath: imgpath,
+   //       imgpath: imgpath,
           name: name,
+          password: password,
+          role:role,
         );
 
   Patient.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
