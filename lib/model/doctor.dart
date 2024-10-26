@@ -1,12 +1,9 @@
 import 'package:eeg_app/model/user.dart';
 
-class Patient extends User {
-  double? height;
-  double? weight;
+class Doctor extends User {
   String? imgpath;
   int? id;
-  Patient({
-    
+  Doctor({
     String? contact,
     String? dob,
     String? gender,
@@ -14,10 +11,8 @@ class Patient extends User {
     String? name,
     String? password,
     String? role,
-    this.height,
-    this.weight,
     this.imgpath,
-    this.id
+    this.id,
   }) : super(
           contact: contact,
           dob: dob,
@@ -25,24 +20,18 @@ class Patient extends User {
           email: email,
           name: name,
           password: password,
-          role:role,
+          role: role,
         );
 
-  Patient.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
-    height = json['height'];
-    weight = json['weight'];
+  Doctor.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     imgpath = json['imgpath'];
-    id=json['id'];
-    
+    id = json['id'];
   }
 
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = super.toJson();
-    data['height'] = height;
-    data['weight'] = weight;
-
-
+   // data['imgPath'] = imgpath;
     return data;
   }
 }

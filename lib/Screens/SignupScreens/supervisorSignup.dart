@@ -12,23 +12,23 @@ import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class DoctorSignup extends StatefulWidget {
-  const DoctorSignup({super.key});
+class SupervisorSignup extends StatefulWidget {
+  const SupervisorSignup({super.key});
 
   @override
-  State<DoctorSignup> createState() => _DoctorSignupState();
+  State<SupervisorSignup> createState() => _SupervisorSignupState();
 }
 
-class _DoctorSignupState extends State<DoctorSignup> {
-  TextEditingController _contName = TextEditingController();
-  TextEditingController _contEmail = TextEditingController();
-  TextEditingController _contPassword = TextEditingController();
-  TextEditingController _contGender = TextEditingController();
-  TextEditingController _contDob = TextEditingController();
-  TextEditingController _contContact = TextEditingController();
+class _SupervisorSignupState extends State<SupervisorSignup> {
+  final TextEditingController _contName = TextEditingController();
+  final TextEditingController _contEmail = TextEditingController();
+  final TextEditingController _contPassword = TextEditingController();
+  final TextEditingController _contGender = TextEditingController();
+  final TextEditingController _contDob = TextEditingController();
+  final TextEditingController _contContact = TextEditingController();
   File? _img;
 
-  Future<void> _selectDate(BuildContext context) async {
+   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -37,7 +37,7 @@ class _DoctorSignupState extends State<DoctorSignup> {
     );
     if (picked != null && picked != DateTime.now()) {
       setState(() {
-        _contDob.text = "${picked.day}-${picked.month}-${picked.year}"; // Format date as needed
+        _contDob.text = "${picked.year}-${picked.month}-${picked.day}"; // Format date as needed
       });
     }
     setState(() {
@@ -48,7 +48,7 @@ class _DoctorSignupState extends State<DoctorSignup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Doctor SignUp"),
+        title: const Text("Supervisor SignUp"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -58,24 +58,27 @@ class _DoctorSignupState extends State<DoctorSignup> {
               children: [
                 CircleAvatar(
                   backgroundImage: _img == null
-                      ? AssetImage("assets/images/person.png")
+                      ? const AssetImage("assets/images/person.png")
                       : FileImage(_img!) as ImageProvider,
                 ),
                 Padding(
-                    padding: EdgeInsets.only(top: 15),
+                    padding: const EdgeInsets.only(top: 15),
                     child: Row(children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       IconButton(
                         onPressed: () async {
-                          XFile? _image = await ImagePicker()
+                          XFile? image = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
-                          setState(() {
-                            _img = File(_image!.path);
-                          });
+                          if (image != null) {
+                            // Check if image is not null
+                            setState(() {
+                              _img = File(image.path);
+                            });
+                          }
                         },
-                        icon: Icon(Icons.camera_alt_outlined),
+                        icon: const Icon(Icons.camera_alt_outlined),
                         alignment: Alignment.bottomRight,
                       )
                     ])),
@@ -85,7 +88,7 @@ class _DoctorSignupState extends State<DoctorSignup> {
               "Enter Your Details",
               style: TextStyle(
                   fontSize: 18,
-                  color:maincolor,
+                  color: maincolor,
                   fontWeight: FontWeight.w500),
               textAlign: TextAlign.left,
             ),
@@ -115,6 +118,7 @@ class _DoctorSignupState extends State<DoctorSignup> {
                 labelText: "DOB",
                 icon: IconButton(onPressed: (){
                   _selectDate(context);
+                  
                 }, icon: Icon(
                   Icons.calendar_today_outlined,
                   color: maincolor,
@@ -124,15 +128,19 @@ class _DoctorSignupState extends State<DoctorSignup> {
               hintText: "Contact",
               labelText: "Contact",
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Button2(
               text: "SignUp",
-              onTap: () {
-                User u=User(contact:_contContact.text,dob: _contDob.text,gender: _contGender.text=="Male"?"M":_contGender=="Female"?"F":"",id: _contEmail.text,name: _contName.text,password: _contPassword.text,role: "doctor");
-                APIHandler().DoctorSignup(image_file: _img, user: u);
-                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+              onTap: () async {
+                User u=User(contact:_contContact.text,dob: _contDob.text,gender: _contGender.text=="Male"?"M":_contGender=="Female"?"F":"",email: _contEmail.text,name: _contName.text,password: _contPassword.text,role: "supervisor");
+                var res=await APIHandler().SupervisorSignup(image_file: _img, user: u);
+                if(res.statusCode==200){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+                }else if(res.statusCode==404){
+                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("User with the same email already exists"),duration: const Duration(seconds: 3),backgroundColor: maincolor,));
+                }
               },
             ),
           ]),

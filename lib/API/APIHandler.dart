@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 
 
-import 'package:eeg_app/Screens/doctorSignup.dart';
+import 'package:eeg_app/Screens/SignupScreens/doctorSignup.dart';
+import 'package:eeg_app/Screens/SignupScreens/patientSignup.dart';
+import 'package:eeg_app/model/doctor.dart';
+import 'package:eeg_app/model/patient.dart';
 import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://172.16.218.127:5000/";
+  String baseurl="http://192.168.43.189:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -26,13 +29,14 @@ class APIHandler{
   } 
 Future<http.Response> DoctorSignup({
    File? image_file,
-    required User user
+    required Doctor user
   })async
   {
     String url='${baseurl}DoctorSignup';
     http.MultipartRequest request=http.MultipartRequest('POST',Uri.parse(url));
-    String user_json=jsonEncode(user.toJson());
-    request.fields["user"]=user_json;
+    String userJson=jsonEncode(user.toJson());
+    print(userJson);
+    request.fields["user"]=userJson;
      if (image_file != null) {
     var imgfile = await http.MultipartFile.fromPath('image', image_file.path);
     request.files.add(imgfile);
@@ -49,8 +53,8 @@ Future<http.Response> DoctorSignup({
   {
     String url='${baseurl}SupervisorSignup';
     http.MultipartRequest request=http.MultipartRequest('POST',Uri.parse(url));
-    String user_json=jsonEncode(user.toJson());
-    request.fields["user"]=user_json;
+    String userJson=jsonEncode(user.toJson());
+    request.fields["user"]=userJson;
      if (image_file != null) {
     var imgfile = await http.MultipartFile.fromPath('image', image_file.path);
     request.files.add(imgfile);
@@ -60,4 +64,96 @@ Future<http.Response> DoctorSignup({
 
   }
   
+  Future<http.Response> PatientSignUp({
+   File? image_file,
+    required Patient user
+  })async
+  {
+    String url='${baseurl}PatientSignup';
+    http.MultipartRequest request=http.MultipartRequest('POST',Uri.parse(url));
+    String userJson=jsonEncode(user.toJson());
+    request.fields["user"]=userJson;
+     if (image_file != null) {
+    var imgfile = await http.MultipartFile.fromPath('image', image_file.path);
+    request.files.add(imgfile);
+  }
+     var response= await request.send();
+     return http.Response.fromStream(response);
+
+  }
+
+  Future<List<dynamic>> AllDoctors() async {
+    String url = "${baseurl}getAllDoctors";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return jsonResponse.map((data) => Doctor.fromJson(data)).toList();
+  }
+
+  Future<Patient> GetPatient(int id) async {
+    String url = "${baseurl}getPatientById/$id";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return Patient.fromJson(jsonResponse);
+  }
+
+  Future<List<dynamic>> GetRegisteredPatients(int id) async {
+    String url = "${baseurl}getRegisteredPatient/$id";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return jsonResponse.map((data) => Patient.fromJson(data)).toList();
+  }
+
+  Future<List<Patient>> GetNewPatients(int id) async {
+    String url = "${baseurl}getNewPatient/$id";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return jsonResponse.map((data) => Patient.fromJson(data)).toList();
+  }
+  Future<Patient> GetPatientByEmail(String email) async{
+    String url = "${baseurl}getPatientByEmail/$email";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return Patient.fromJson(jsonResponse);
+  }
+  
+  Future<Doctor> GetDoctorByEmail(String email) async{
+    String url = "${baseurl}getDoctorByEmail/$email";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return Doctor.fromJson(jsonResponse);
+  }
+
+Future<Doctor> GetDoctorById(int id) async {
+  String url = "${baseurl}getDoctorById/$id";
+  var response = await http.get(Uri.parse(url));
+  var jsonResponse = jsonDecode(response.body);
+  return Doctor.fromJson(jsonResponse);
 }
+Future<List<dynamic>> GetPatientPrescribtion(int id) async {
+  String url = "${baseurl}getPatientPrescription/$id";
+  var response = await http.get(Uri.parse(url));
+  var jsonResponse = jsonDecode(response.body);
+  return jsonResponse.map((data) => data).toList();
+}
+Future<http.Response> AddAppointment(DateTime date,DateTime time,int doctorid,int patientid) async {
+ 
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['date'] = date;
+    data['time'] = time;
+    data['status'] = false;
+    data['doctorid'] = doctorid;
+    data['patientid'] = patientid;
+    
+  String userJson=jsonEncode(data);
+  
+  String url='${baseurl}addAppointment';
+  var response = await http.post(
+    Uri.parse(url),
+    headers: {"Content-Type": "application/json"},  // Set content type to JSON
+    body: userJson,  // Send the JSON directly in the body
+  );
+  return response;
+  
+}
+}
+

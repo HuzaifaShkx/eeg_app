@@ -1,27 +1,32 @@
 import 'dart:io';
 
+import 'package:eeg_app/API/APIHandler.dart';
+import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/genderField.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild1.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild2.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
+import 'package:eeg_app/model/doctor.dart';
+import 'package:eeg_app/model/user.dart';
 import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class PatientSignUp extends StatefulWidget {
-  const PatientSignUp({super.key});
+class DoctorSignup extends StatefulWidget {
+  const DoctorSignup({super.key});
 
   @override
-  State<PatientSignUp> createState() => _PatientSignUpState();
+  State<DoctorSignup> createState() => _DoctorSignupState();
 }
 
-class _PatientSignUpState extends State<PatientSignUp> {
-  TextEditingController _contName = TextEditingController();
-  TextEditingController _contEmail = TextEditingController();
-  TextEditingController _contPassword = TextEditingController();
-  TextEditingController _contGender = TextEditingController();
-  TextEditingController _contDob = TextEditingController();
+class _DoctorSignupState extends State<DoctorSignup> {
+  final TextEditingController _contName = TextEditingController();
+  final TextEditingController _contEmail = TextEditingController();
+  final TextEditingController _contPassword = TextEditingController();
+  final TextEditingController _contGender = TextEditingController();
+  final TextEditingController _contDob = TextEditingController();
+  final TextEditingController _contContact = TextEditingController();
   File? _img;
 
   Future<void> _selectDate(BuildContext context) async {
@@ -33,19 +38,18 @@ class _PatientSignUpState extends State<PatientSignUp> {
     );
     if (picked != null && picked != DateTime.now()) {
       setState(() {
-        _contDob.text = "${picked.day}/${picked.month}/${picked.year}"; // Format date as needed
+        _contDob.text = "${picked.year}-${picked.month}-${picked.day}"; // Format date as needed
       });
     }
     setState(() {
       
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Patient SignUp"),
+        title: const Text("Doctor SignUp"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -55,24 +59,24 @@ class _PatientSignUpState extends State<PatientSignUp> {
               children: [
                 CircleAvatar(
                   backgroundImage: _img == null
-                      ? AssetImage("assets/images/person.png")
+                      ? const AssetImage("assets/images/person.png")
                       : FileImage(_img!) as ImageProvider,
                 ),
                 Padding(
-                    padding: EdgeInsets.only(top: 15),
+                    padding: const EdgeInsets.only(top: 15),
                     child: Row(children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       IconButton(
                         onPressed: () async {
-                          XFile? _image = await ImagePicker()
+                          XFile? image = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
                           setState(() {
-                            _img = File(_image!.path);
+                            _img = File(image!.path);
                           });
                         },
-                        icon: Icon(Icons.camera_alt_outlined),
+                        icon: const Icon(Icons.camera_alt_outlined),
                         alignment: Alignment.bottomRight,
                       )
                     ])),
@@ -82,7 +86,7 @@ class _PatientSignUpState extends State<PatientSignUp> {
               "Enter Your Details",
               style: TextStyle(
                   fontSize: 18,
-                  color: maincolor,
+                  color:maincolor,
                   fontWeight: FontWeight.w500),
               textAlign: TextAlign.left,
             ),
@@ -106,16 +110,6 @@ class _PatientSignUpState extends State<PatientSignUp> {
               hintText: "Select Gender",
               labelText: "Gender",
             ),
-            MyTextFormField(
-              controller: _contGender,
-              hintText: "Height",
-              labelText: "Height",
-            ),
-            MyTextFormField(
-              controller: _contGender,
-              hintText: "Weight",
-              labelText: "Weight",
-            ),
             MyTextFormField2(
                 controller: _contDob,
                 hintText: "DOB",
@@ -126,13 +120,20 @@ class _PatientSignUpState extends State<PatientSignUp> {
                   Icons.calendar_today_outlined,
                   color: maincolor,
                 )),),
-            SizedBox(
+                MyTextFormField(
+              controller: _contContact,
+              hintText: "Contact",
+              labelText: "Contact",
+            ),
+            const SizedBox(
               height: 20,
             ),
             Button2(
               text: "SignUp",
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+                Doctor u=Doctor(contact:_contContact.text,dob: _contDob.text,gender: _contGender.text=="Male"?"M":_contGender=="Female"?"F":"",email: _contEmail.text,name: _contName.text,password: _contPassword.text,role: "doctor");
+                APIHandler().DoctorSignup(image_file: _img, user: u);
+                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
               },
             ),
           ]),

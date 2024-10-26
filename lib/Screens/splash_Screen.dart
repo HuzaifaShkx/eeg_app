@@ -5,6 +5,8 @@ import 'package:eeg_app/Screens/Start_home_page.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -13,8 +15,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Add a timer for splash duration, then navigate to Home screen
-    Timer(Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => StartHomePage()));
+    Timer(const Duration(seconds: 5), () {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const StartHomePage()));
     });
   }
 
@@ -25,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           
         ),
            child: Image.asset('assets/images/splash.png', height: 100, width: 100),

@@ -24,7 +24,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
       child: Container(
         width: width-100,
         height: 50,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           
           //color: Color(0xFFF5F7FB),
           //border:Border.all(color: Color(0xFFF5F7FB),width: 2),
@@ -32,13 +32,13 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
         child: TextFormField(
           controller: widget.controller,
           decoration: InputDecoration(
-            iconColor: Color(0xFFF5F7FB),
+            iconColor: const Color(0xFFF5F7FB),
             labelText: widget.labelText,
             //hintText: widget.hintText,
             
             border: UnderlineInputBorder(
               borderRadius: BorderRadius.circular(5),
-              borderSide: BorderSide(color: Color(0xFFF5F7FB),width: 2),
+              borderSide: const BorderSide(color: Color(0xFFF5F7FB),width: 2),
             ),
           ),
         ),

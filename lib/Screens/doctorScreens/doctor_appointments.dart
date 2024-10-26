@@ -1,4 +1,4 @@
-import 'package:eeg_app/Screens/patient_detail.dart';
+import 'package:eeg_app/Screens/doctorScreens/patient_detail.dart';
 import 'package:flutter/material.dart';
 
 class DoctorAppointmentScreen extends StatefulWidget {
@@ -12,19 +12,19 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Appointments"),),
+      appBar: AppBar(title: const Text("Appointments"),),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20,),
-            Text("Upcoming Appointments"),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
+            const Text("Upcoming Appointments"),
+            const SizedBox(height: 20,),
             ListView.builder(
                   shrinkWrap: true, // Add this line
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return Container(
+                    return SizedBox(
                       width: 30,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20, right: 20,top: 5),
@@ -36,10 +36,10 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.all(10.0),
+                                      padding: EdgeInsets.all(10.0),
                                       child: CircleAvatar(
                                         radius: 40,
                                         backgroundImage: AssetImage("assets/images/person.png"),
@@ -53,39 +53,39 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
                                Row(
                                 //mainAxisAlignment: MainAxisAlignment.spaceAround,
                                  children: [
-                                  SizedBox(width: 10,),
+                                  const SizedBox(width: 10,),
                                   Container(
-                                    padding: EdgeInsets.all(2),
+                                    padding: const EdgeInsets.all(2),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(6),bottomRight: Radius.circular(6),topLeft: Radius.circular(6),topRight: Radius.circular(6)),
+                                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(6),bottomRight: Radius.circular(6),topLeft: Radius.circular(6),topRight: Radius.circular(6)),
                                       //color: Color(0xFF7C0909) ,
                                       border: Border.all()
                                     ),
                                     height: 50,
                                    width: 130,
                                     alignment: Alignment.center,
-                                    child: Text("Schedule Meeting on 10 june",style: TextStyle(color: Colors.black),)
+                                    child: const Text("Schedule Meeting on 10 june",style: TextStyle(color: Colors.black),)
                                       ),
-                                  SizedBox(width: 20,),
+                                  const SizedBox(width: 20,),
                                    InkWell(
                                     onTap: (){
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PatientDetailScreen()));
+                                     // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const PatientDetailScreen()));
                                     },
                                      child: Container(
                                       
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         borderRadius: BorderRadius.only(bottomLeft: Radius.circular(6),bottomRight: Radius.circular(6),topLeft: Radius.circular(6),topRight: Radius.circular(6)),
                                         color: Color(0xFF7C0909) ,
                                       ),
                                       height: 30,
                                      width: 130,
                                       alignment: Alignment.center,
-                                      child: Text("View Details",style: TextStyle(color: Colors.white),)
+                                      child: const Text("View Details",style: TextStyle(color: Colors.white),)
                                         ),
                                    ),
                                  ],
                                ),
-                               SizedBox(height: 20,)
+                               const SizedBox(height: 20,)
                               ],
                               
                             ),

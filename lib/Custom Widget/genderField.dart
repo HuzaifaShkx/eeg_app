@@ -5,7 +5,7 @@ class GenderFormField extends StatefulWidget {
   final String hintText;
   final String labelText;
 
-  const GenderFormField({
+  const GenderFormField({super.key, 
     required this.controller,
     required this.hintText,
     required this.labelText,
@@ -22,7 +22,7 @@ class _GenderFormFieldState extends State<GenderFormField> {
   Widget build(BuildContext context) {
     final width=MediaQuery.of(context).size.width;
     final height=MediaQuery.of(context).size.height;
-    return Container(
+    return SizedBox(
       width: width-100,
       child:
         DropdownButtonFormField<String>(
@@ -42,13 +42,13 @@ class _GenderFormFieldState extends State<GenderFormField> {
             );
           }).toList(),
           decoration:  InputDecoration(
-          iconColor: Color(0xFFF5F7FB),
+          iconColor: const Color(0xFFF5F7FB),
           labelText: widget.labelText,
           hintText: widget.hintText,
          // suffixIcon: widget.icon,
           border: UnderlineInputBorder(
             borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide(color: Color(0xFFF5F7FB),width: 2),
+            borderSide: const BorderSide(color: Color(0xFFF5F7FB),width: 2),
           ),
         ),
         ),

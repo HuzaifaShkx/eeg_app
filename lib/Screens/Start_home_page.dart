@@ -17,25 +17,26 @@ class StartHomePage extends StatelessWidget {
       body: Column(children: [
         
         Container(
-          padding: EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 20),
           height: 450,
           width: width,
           decoration: BoxDecoration(
             color: maincolor,
           ),
-          child: Column(
+          child:  Column(
           children: [
             Text("Decode Your Emotions\n with EEG Technology",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 22)),
+            Image.asset("assets/images/brain2.png",height: 200,width: 200,),
           ],
         ),),
-        SizedBox(height: 20,),
+        const SizedBox(height: 20,),
         Button1(text: "Login", onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
           print("login");
         }),
-        SizedBox(height: 20,),
+        const SizedBox(height: 20,),
         Button1(text: "Create an Account", onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => RoleScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const RoleScreen()));
           print("Create an Account");
         })
       ]),

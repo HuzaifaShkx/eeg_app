@@ -1,32 +1,53 @@
+import 'dart:ffi';
+
+import 'package:eeg_app/API/APIHandler.dart';
 import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
-import 'package:eeg_app/Screens/patient_detail.dart';
+import 'package:eeg_app/Screens/doctorScreens/patient_detail.dart';
+import 'package:eeg_app/model/patient.dart';
 import 'package:flutter/material.dart';
 
 class DoctorPatientScreen extends StatefulWidget {
-  const DoctorPatientScreen({super.key});
+  final int? doctorId;
+  const DoctorPatientScreen( {super.key, this.doctorId});
 
   @override
   State<DoctorPatientScreen> createState() => _DoctorPatientScreenState();
 }
 
 class _DoctorPatientScreenState extends State<DoctorPatientScreen> {
+  late List<dynamic> patients=[];
+  _getRegisteredPatients() async {
+    patients=await APIHandler().GetRegisteredPatients(widget.doctorId!);
+    setState(() {
+      
+    });
+  }
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getRegisteredPatients();
+  }
   @override
   Widget build(BuildContext context) {
+    //_getRegisteredPatients();
     return Scaffold(
-      appBar: AppBar(title: Text("My Patients"),),
+      appBar: AppBar(title: const Text("My Patients"),),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20,),
-            Text("Registered Patients"),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
+            const Text("Registered Patients"),
+            const SizedBox(height: 20,),
+            patients.length==0?Center(child: Text("No registered patients")):
             ListView.builder(
                   shrinkWrap: true, // Add this line
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: 10,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: patients.length,
                   itemBuilder: (context, index) {
-                    return Container(
+                    return SizedBox(
                       width: 30,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20, right: 20,top: 5),
@@ -38,16 +59,16 @@ class _DoctorPatientScreenState extends State<DoctorPatientScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                 Row(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.all(10.0),
+                                      padding: EdgeInsets.all(10.0),
                                       child: CircleAvatar(
                                         radius: 40,
                                         backgroundImage: AssetImage("assets/images/person.png"),
                                       ),
                                     ),
-                                    Text("Patient Name"),
+                                    Text("${patients[index].name}"),
                                   ],
                                 ),
                                
@@ -55,16 +76,16 @@ class _DoctorPatientScreenState extends State<DoctorPatientScreen> {
                                Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                  children: [
-                                  SizedBox(width: 20,),
+                                   SizedBox(width: 20,),
                                    Align(
                                     alignment: Alignment.centerRight,
                                      child: Button2(text: "View Details",onTap: (){
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>PatientDetailScreen()));
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> PatientDetailScreen(id:patients[index].id)));
                                      },)
                                    ),
                                  ],
                                ),
-                               SizedBox(height: 20,)
+                               const SizedBox(height: 20,)
                               ],
                               
                             ),

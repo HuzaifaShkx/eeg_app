@@ -3,10 +3,14 @@ import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/loginTextFormField.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild1.dart';
-import 'package:eeg_app/Screens/doctorDash.dart';
-import 'package:eeg_app/Screens/patientDash.dart';
+import 'package:eeg_app/Screens/doctorScreens/doctorDash.dart';
+import 'package:eeg_app/Screens/patientScreens/patientDash.dart';
+import 'package:eeg_app/Screens/patientScreens/patient_details_p.dart';
 import 'package:eeg_app/Screens/roleScreen.dart';
 import 'package:eeg_app/Screens/supervisorDash.dart';
+import 'package:eeg_app/Screens/supervisor_upload_screen.dart';
+import 'package:eeg_app/model/doctor.dart';
+import 'package:eeg_app/model/patient.dart';
 import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +22,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController _contUsername = TextEditingController();
-  TextEditingController _contPassword = TextEditingController();
+  final TextEditingController _contUsername = TextEditingController();
+  final TextEditingController _contPassword = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final width=MediaQuery.of(context).size.width;
@@ -28,15 +32,16 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Stack(children: [
           ClipRRect(
-            borderRadius: BorderRadius.only(bottomLeft: Radius.elliptical(400, 100),bottomRight: Radius.elliptical(400, 100)),
+            borderRadius: const BorderRadius.only(bottomLeft: Radius.elliptical(400, 100),bottomRight: Radius.elliptical(400, 100)),
             child: Container(
               height: 300,
               width: width,
               color: maincolor,
-              child: Column(
+              child:  Column(
                 children: [
-                  SizedBox(height: 50,),
-                  Text("Decode Your Emotions\n with EEG Technology",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 22)),
+                  SizedBox(height: 30,),
+                  Image.asset("assets/images/brain2.png",height: 150,width: 150,),
+                  //Text("Decode Your Emotions\n with EEG Technology",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 22)),
                 ],
               ),
             ),
@@ -46,51 +51,54 @@ class _LoginScreenState extends State<LoginScreen> {
             alignment: Alignment.center,
             width: width-40,
             height: height-220,
-            margin: EdgeInsets.only(top: 200,left: 20),
-            padding: EdgeInsets.only(top: 20),
+            margin: const EdgeInsets.only(top: 200,left: 20),
+            padding: const EdgeInsets.only(top: 20),
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.2),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(2, 3),
+                  offset: const Offset(2, 3),
                 )
               ],
               color: Colors.white,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20),bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20),bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
             ),
             child: Column(children: [
             Text("LOGIN",style: TextStyle(color: maincolor,fontWeight: FontWeight.w600,fontSize: 24)),
-            SizedBox(height: 20,),
-            LoginMyTextFormField(controller: _contUsername, hintText: "User name or Email", labelText: "Username", 
+            const SizedBox(height: 20,),
+            LoginMyTextFormField(controller: _contUsername, hintText: "User name or Email", labelText: "Username",obsecure: false, 
             //icon: Icon(Icons.email)
             ),
-            SizedBox(height: 20,),
-            LoginMyTextFormField(controller: _contPassword, hintText: "Password", labelText: "Password", 
+            const SizedBox(height: 20,),
+            LoginMyTextFormField(controller: _contPassword, hintText: "Password", labelText: "Password", obsecure: true,
             //icon: Icon(Icons.lock)
             )
             ,
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Button2(text: "Login", onTap: () async {
              String r=await APIHandler().login(_contUsername.text, _contPassword.text);
+
               if(r=="patient"){
-                Navigator.of(context).push(MaterialPageRoute(builder: ((context) => PatientDash())));
+                Patient patient=await APIHandler().GetPatientByEmail(_contUsername.text);
+                Navigator.of(context).push(MaterialPageRoute(builder: ((context) =>  PatientDetailPa(patient: patient))));
               }else if(r=="doctor"){
-                Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DoctorDash())));
+                Doctor doctor=await APIHandler().GetDoctorByEmail(_contUsername.text);
+                Navigator.of(context).push(MaterialPageRoute(builder: ((context) =>  DoctorDash(doctor: doctor))));
               }else if(r=="supervisor"){
-                Navigator.of(context).push(MaterialPageRoute(builder: ((context) => SupervisorDash())));
+                Navigator.of(context).push(MaterialPageRoute(builder: ((context) =>  SupervisorScreen())));
               }else
               {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Invalid username or password"),duration: Duration(seconds: 3),backgroundColor: maincolor,));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Invalid username or password"),duration: const Duration(seconds: 3),backgroundColor: maincolor,));
               }
         
             }),
-            SizedBox(height: 20,),
-            Text("Don't have an account?",style: TextStyle(color: Colors.black),),
+            const SizedBox(height: 20,),
+            const Text("Don't have an account?",style: TextStyle(color: Colors.black),),
             TextButton(onPressed: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => RoleScreen())));
-            }, child: Text("Signup"))
+              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => const RoleScreen())));
+            }, child: const Text("Signup"))
         
           ],),)
         ]),

@@ -1,34 +1,36 @@
 import 'dart:io';
 
 import 'package:eeg_app/API/APIHandler.dart';
-import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/genderField.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild1.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild2.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
+import 'package:eeg_app/model/patient.dart';
 import 'package:eeg_app/model/user.dart';
 import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class SupervisorSignup extends StatefulWidget {
-  const SupervisorSignup({super.key});
+class PatientSignUp extends StatefulWidget {
+  const PatientSignUp({super.key});
 
   @override
-  State<SupervisorSignup> createState() => _SupervisorSignupState();
+  State<PatientSignUp> createState() => _PatientSignUpState();
 }
 
-class _SupervisorSignupState extends State<SupervisorSignup> {
-  TextEditingController _contName = TextEditingController();
-  TextEditingController _contEmail = TextEditingController();
-  TextEditingController _contPassword = TextEditingController();
-  TextEditingController _contGender = TextEditingController();
-  TextEditingController _contDob = TextEditingController();
-  TextEditingController _contContact = TextEditingController();
+class _PatientSignUpState extends State<PatientSignUp> {
+  final TextEditingController _contName = TextEditingController();
+  final TextEditingController _contEmail = TextEditingController();
+  final TextEditingController _contPassword = TextEditingController();
+  final TextEditingController _contGender = TextEditingController();
+  final TextEditingController _contDob = TextEditingController();
+  final TextEditingController _contContact=TextEditingController();
+  final TextEditingController _contHeight=TextEditingController();
+  final TextEditingController _contWidth=TextEditingController();
   File? _img;
 
-   Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -37,18 +39,19 @@ class _SupervisorSignupState extends State<SupervisorSignup> {
     );
     if (picked != null && picked != DateTime.now()) {
       setState(() {
-        _contDob.text = "${picked.day}/${picked.month}/${picked.year}"; // Format date as needed
+        _contDob.text = "${picked.year}-${picked.month}-${picked.day}"; // Format date as needed
       });
     }
     setState(() {
       
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Supervisor SignUp"),
+        title: const Text("Patient SignUp"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -58,27 +61,24 @@ class _SupervisorSignupState extends State<SupervisorSignup> {
               children: [
                 CircleAvatar(
                   backgroundImage: _img == null
-                      ? AssetImage("assets/images/person.png")
+                      ? const AssetImage("assets/images/person.png")
                       : FileImage(_img!) as ImageProvider,
                 ),
                 Padding(
-                    padding: EdgeInsets.only(top: 15),
+                    padding: const EdgeInsets.only(top: 15),
                     child: Row(children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
                       IconButton(
                         onPressed: () async {
-                          XFile? _image = await ImagePicker()
+                          XFile? image = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
-                          if (_image != null) {
-                            // Check if image is not null
-                            setState(() {
-                              _img = File(_image.path);
-                            });
-                          }
+                          setState(() {
+                            _img = File(image!.path);
+                          });
                         },
-                        icon: Icon(Icons.camera_alt_outlined),
+                        icon: const Icon(Icons.camera_alt_outlined),
                         alignment: Alignment.bottomRight,
                       )
                     ])),
@@ -112,35 +112,41 @@ class _SupervisorSignupState extends State<SupervisorSignup> {
               hintText: "Select Gender",
               labelText: "Gender",
             ),
+            MyTextFormField(
+              controller: _contHeight,
+              hintText: "Height",
+              labelText: "Height",
+            ),
+            MyTextFormField(
+              controller: _contWidth,
+              hintText: "Weight",
+              labelText: "Weight",
+            ),
             MyTextFormField2(
                 controller: _contDob,
                 hintText: "DOB",
                 labelText: "DOB",
                 icon: IconButton(onPressed: (){
                   _selectDate(context);
-                  
                 }, icon: Icon(
                   Icons.calendar_today_outlined,
                   color: maincolor,
                 )),),
-                MyTextFormField(
+                 MyTextFormField(
               controller: _contContact,
               hintText: "Contact",
               labelText: "Contact",
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Button2(
               text: "SignUp",
-              onTap: () async {
-                User u=User(contact:_contContact.text,dob: _contDob.text,gender: _contGender.text=="Male"?"M":_contGender=="Female"?"F":"",id: _contEmail.text,name: _contName.text,password: _contPassword.text,role: "supervisor");
-                var res=await APIHandler().SupervisorSignup(image_file: _img, user: u);
-                if(res.statusCode==200){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
-                }else if(res.statusCode==404){
-                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User with the same email already exists"),duration: Duration(seconds: 3),backgroundColor: maincolor,));
-                }
+              onTap: () {
+                Patient u=Patient(contact:_contContact.text,dob: _contDob.text,gender: _contGender.text=="Male"?"M":_contGender=="Female"?"F":"",email: _contEmail.text,name: _contName.text,password: _contPassword.text,role: "patient",weight: double.parse(_contWidth.text),height: double.parse(_contHeight.text),);
+                
+                APIHandler().PatientSignUp(image_file: _img, user: u);
+                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
               },
             ),
           ]),
