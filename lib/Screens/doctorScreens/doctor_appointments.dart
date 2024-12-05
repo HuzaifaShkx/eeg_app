@@ -1,14 +1,31 @@
+import 'package:eeg_app/API/APIHandler.dart';
 import 'package:eeg_app/Screens/doctorScreens/patient_detail.dart';
+import 'package:eeg_app/model/doctor.dart';
+import 'package:eeg_app/model/patient.dart';
 import 'package:flutter/material.dart';
 
 class DoctorAppointmentScreen extends StatefulWidget {
-  const DoctorAppointmentScreen({super.key});
+  final Doctor doctor;
+  const DoctorAppointmentScreen({super.key, required this.doctor});
 
   @override
   State<DoctorAppointmentScreen> createState() => _DoctorAppointmentScreenState();
 }
 
 class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
+   List<dynamic> _patients = [];
+  _getPatient() async {
+     _patients=await APIHandler().GetNewPatients(widget.doctor.id!);
+      setState(() {
+       
+    });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getPatient();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,8 +39,9 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
             ListView.builder(
                   shrinkWrap: true, // Add this line
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 10,
+                  itemCount: _patients.length,
                   itemBuilder: (context, index) {
+                    dynamic p=_patients[index];
                     return SizedBox(
                       width: 30,
                       child: Padding(
@@ -36,16 +54,18 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Row(
+                                 Row(
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(10.0),
                                       child: CircleAvatar(
                                         radius: 40,
-                                        backgroundImage: AssetImage("assets/images/person.png"),
+                                        backgroundImage:widget.doctor.imgpath != null? 
+                                         NetworkImage("${APIHandler().baseurl}/image/${p["imgpath"]}") as ImageProvider
+                                        : AssetImage('assets/images/person.png'),
                                       ),
                                     ),
-                                    Text("Patient Name"),
+                                    Text("${p["name"]}"),
                                   ],
                                 ),
                                
@@ -69,7 +89,7 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
                                   const SizedBox(width: 20,),
                                    InkWell(
                                     onTap: (){
-                                     // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const PatientDetailScreen()));
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> PatientDetailScreen(id: p["id"],)));
                                     },
                                      child: Container(
                                       

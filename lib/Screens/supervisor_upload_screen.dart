@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:eeg_app/Custom%20Widget/button1.dart';
 import 'package:eeg_app/Custom%20Widget/color.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
+import 'package:eeg_app/model/supervisor.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 //import 'package:provider/provider.dart';
 //import 'supervisor_provider.dart';
 
 class SupervisorScreen extends StatefulWidget {
-  const SupervisorScreen({super.key});
+  const SupervisorScreen( {super.key});
 
   @override
   State<SupervisorScreen> createState() => _SupervisorScreenState();

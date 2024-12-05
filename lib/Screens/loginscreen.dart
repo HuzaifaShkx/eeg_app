@@ -8,9 +8,11 @@ import 'package:eeg_app/Screens/patientScreens/patientDash.dart';
 import 'package:eeg_app/Screens/patientScreens/patient_details_p.dart';
 import 'package:eeg_app/Screens/roleScreen.dart';
 import 'package:eeg_app/Screens/supervisorDash.dart';
+import 'package:eeg_app/Screens/supervisorHome.dart';
 import 'package:eeg_app/Screens/supervisor_upload_screen.dart';
 import 'package:eeg_app/model/doctor.dart';
 import 'package:eeg_app/model/patient.dart';
+import 'package:eeg_app/model/supervisor.dart';
 import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -87,7 +89,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 Doctor doctor=await APIHandler().GetDoctorByEmail(_contUsername.text);
                 Navigator.of(context).push(MaterialPageRoute(builder: ((context) =>  DoctorDash(doctor: doctor))));
               }else if(r=="supervisor"){
-                Navigator.of(context).push(MaterialPageRoute(builder: ((context) =>  SupervisorScreen())));
+                 Supervisor supervisor=await APIHandler().GetSupervisorByEmail(_contUsername.text);
+                Navigator.of(context).push(MaterialPageRoute(builder: ((context) =>  SupervisorHome(supervisor:  supervisor))));
               }else
               {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Invalid username or password"),duration: const Duration(seconds: 3),backgroundColor: maincolor,));

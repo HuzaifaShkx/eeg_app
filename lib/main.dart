@@ -14,6 +14,7 @@ import 'package:eeg_app/Screens/patientScreens/patient_details_p.dart';
 import 'package:eeg_app/Screens/roleScreen.dart';
 import 'package:eeg_app/Screens/splash_Screen.dart';
 import 'package:eeg_app/Screens/supervisorDash.dart';
+import 'package:eeg_app/Screens/supervisorHome.dart';
 import 'package:eeg_app/Screens/supervisor_upload_screen.dart';
 import 'package:flutter/material.dart';
 

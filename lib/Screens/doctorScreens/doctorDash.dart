@@ -19,7 +19,7 @@ class DoctorDash extends StatefulWidget {
 
 class _DoctorDashState extends State<DoctorDash> {
   final TextEditingController _searchController = TextEditingController();
-  List<Patient> _patients = [];
+  List<dynamic> _patients = [];
   _getPatient() async {
      _patients=await APIHandler().GetNewPatients(widget.doctor.id!);
       setState(() {
@@ -47,6 +47,7 @@ class _DoctorDashState extends State<DoctorDash> {
               height: 200,
             ),
             ListTile(
+              leading: Icon(Icons.person_3_outlined,color:  Colors.white,),
               title: const Text(
                 "My Patients",
                 style: TextStyle(color: Colors.white),
@@ -69,12 +70,12 @@ class _DoctorDashState extends State<DoctorDash> {
             
             ListTile(
               leading: Icon(Icons.calendar_month_outlined,color: Colors.white,),
-              title: const Text(
+              title:  Text(
                 "Appointments",
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const DoctorAppointmentScreen()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> DoctorAppointmentScreen(doctor: widget.doctor,)));
               },
             ),
             
@@ -176,7 +177,7 @@ class _DoctorDashState extends State<DoctorDash> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _patients.length,
                 itemBuilder: (context, index) {
-                  Patient p=_patients[index];
+                  dynamic p=_patients[index];
                   return SizedBox(
                     width: 30,
                     child: Padding(
@@ -189,16 +190,19 @@ class _DoctorDashState extends State<DoctorDash> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Padding(
+                               Padding(
                                 padding: EdgeInsets.all(10.0),
                                 child: CircleAvatar(
                                   radius: 40,
-                                  backgroundImage: AssetImage("assets/images/person.png"),
+                                  backgroundImage: 
+                                   p["imgpath"]!=null? NetworkImage("${APIHandler().baseurl}/image/${p["imgpath"]}") as ImageProvider
+                                        : AssetImage('assets/images/person.png'),
+                                 
                                 ),
                               ),
-                             const Padding(
+                              Padding(
                                padding: EdgeInsets.all(10.0),
-                               child: Text("Patient Name"),
+                               child: Text("${p["name"]}"),
                              ),
           
                              Container(

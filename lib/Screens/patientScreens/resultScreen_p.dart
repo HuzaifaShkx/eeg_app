@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class Resultscreen extends StatefulWidget {
+class ResultscreenP extends StatefulWidget {
   final int id;
-  const Resultscreen({super.key, required this.id});
+  const ResultscreenP({super.key, required this.id});
 
   @override
-  State<Resultscreen> createState() => _ResultscreenState();
+  State<ResultscreenP> createState() => _ResultscreenPState();
 }
 
-class _ResultscreenState extends State<Resultscreen> {
+class _ResultscreenPState extends State<ResultscreenP> {
   Patient ?p;
   _getPatient(int id) async {
     //get patient data
@@ -135,21 +135,21 @@ class _ResultscreenState extends State<Resultscreen> {
                 )),
               ),
               SizedBox(height: 10,),
-              Container(
-                alignment: Alignment.topRight,
-                child: InkWell(
-                  onTap: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddPrescribtion()));
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add_task_outlined,size: 50,color: primary,),
-                      Text("Add Prescribtion",style: TextStyle(color: primary,),)
-                    ],
-                  ),
-                ),
-              )
+              // Container(
+              //   alignment: Alignment.topRight,
+              //   child: InkWell(
+              //     onTap: (){
+              //       Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddPrescribtion()));
+              //     },
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         Icon(Icons.add_task_outlined,size: 50,color: primary,),
+              //         Text("Add Prescribtion",style: TextStyle(color: primary,),)
+              //       ],
+              //     ),
+              //   ),
+              // )
           ],),
       )
     );

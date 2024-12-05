@@ -5,6 +5,7 @@ import 'package:eeg_app/Screens/doctorScreens/patient_prescribtion.dart';
 import 'package:eeg_app/Screens/doctorScreens/resultScreen.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
 import 'package:eeg_app/Screens/patientScreens/all_doctors.dart';
+import 'package:eeg_app/Screens/patientScreens/resultScreen_p.dart';
 import 'package:eeg_app/model/patient.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +55,7 @@ class PatientDetailPa extends StatelessWidget {
             ),
             onTap: () {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => AllDoctorsScreen()));
+                  MaterialPageRoute(builder: (context) => AllDoctorsScreen(id:  patient.id!)));
             },
           ),
           ListTile(
@@ -186,7 +187,7 @@ class PatientDetailPa extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Resultscreen(
+                              builder: (context) => ResultscreenP(
                                     id: patient.id!,
                                   )));
                     }),

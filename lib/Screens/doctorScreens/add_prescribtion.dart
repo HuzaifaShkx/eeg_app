@@ -9,6 +9,7 @@ class AddPrescribtion extends StatefulWidget {
 }
 
 class _AddPrescribtionState extends State<AddPrescribtion> {
+  TextEditingController _presController=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +40,7 @@ class _AddPrescribtionState extends State<AddPrescribtion> {
                   ],
                 ),
                 child: TextFormField(
+                  controller: _presController,
                   scrollPadding: const EdgeInsets.all(20),
                   maxLines: 20, // This allows the input to span multiple lines
                   keyboardType: TextInputType.multiline,
@@ -57,7 +59,9 @@ class _AddPrescribtionState extends State<AddPrescribtion> {
                 ),
               ),
               SizedBox(height: 20),
-              Center(child: Button2(text: "Add Prescribtion", onTap: (){}))
+              Center(child: Button2(text: "Add Prescribtion", onTap: (){
+                
+              }))
             ],
           ),
         ),

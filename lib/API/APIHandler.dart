@@ -4,13 +4,15 @@ import 'dart:io';
 
 import 'package:eeg_app/Screens/SignupScreens/doctorSignup.dart';
 import 'package:eeg_app/Screens/SignupScreens/patientSignup.dart';
+import 'package:eeg_app/Screens/doctorScreens/add_prescribtion.dart';
 import 'package:eeg_app/model/doctor.dart';
 import 'package:eeg_app/model/patient.dart';
+import 'package:eeg_app/model/supervisor.dart';
 import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.43.189:5000/";
+  String baseurl="http://192.168.0.101:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -103,12 +105,27 @@ Future<http.Response> DoctorSignup({
     return jsonResponse.map((data) => Patient.fromJson(data)).toList();
   }
 
-  Future<List<Patient>> GetNewPatients(int id) async {
-    String url = "${baseurl}getNewPatient/$id";
-    var response = await http.get(Uri.parse(url));
-    var jsonResponse = jsonDecode(response.body);
-    return jsonResponse.map((data) => Patient.fromJson(data)).toList();
+  // Future<List<dynamic>> GetNewPatients(int id) async {
+  //   String url = "${baseurl}getNewPatient/$id";
+  //   var response = await http.get(Uri.parse(url));
+  //   var jsonResponse = jsonDecode(response.body);
+  //   return jsonResponse.map((data) => Patient.fromJson(data)).toList(); 
+  // }
+
+  Future<List<dynamic>> GetNewPatients(int id) async {
+  String url = "${baseurl}getNewPatient/$id";
+  var response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Decode the JSON response into a List of dynamic objects
+    List<dynamic> jsonResponse = jsonDecode(response.body);
+
+    // Return the decoded list directly without mapping it to a model
+    return jsonResponse;
+  } else {
+    throw Exception('Failed to load new patients');
   }
+}
   Future<Patient> GetPatientByEmail(String email) async{
     String url = "${baseurl}getPatientByEmail/$email";
     var response = await http.get(Uri.parse(url));
@@ -129,13 +146,25 @@ Future<Doctor> GetDoctorById(int id) async {
   var jsonResponse = jsonDecode(response.body);
   return Doctor.fromJson(jsonResponse);
 }
+Future<Supervisor> GetSupervisorById(int id) async {
+  String url = "${baseurl}getSupervisorById/$id";
+  var response = await http.get(Uri.parse(url));
+  var jsonResponse = jsonDecode(response.body);
+  return Supervisor.fromJson(jsonResponse);
+}
+Future<Supervisor> GetSupervisorByEmail(String email) async {
+  String url = "${baseurl}getSupervisorByEmail/$email";
+  var response = await http.get(Uri.parse(url));
+  var jsonResponse = jsonDecode(response.body);
+  return Supervisor.fromJson(jsonResponse);
+}
 Future<List<dynamic>> GetPatientPrescribtion(int id) async {
   String url = "${baseurl}getPatientPrescription/$id";
   var response = await http.get(Uri.parse(url));
   var jsonResponse = jsonDecode(response.body);
   return jsonResponse.map((data) => data).toList();
 }
-Future<http.Response> AddAppointment(DateTime date,DateTime time,int doctorid,int patientid) async {
+Future<http.Response> AddAppointment(String date,String time,int doctorid,int patientid) async {
  
     final Map<String, dynamic> data = <String, dynamic>{};
     data['date'] = date;
@@ -154,6 +183,47 @@ Future<http.Response> AddAppointment(DateTime date,DateTime time,int doctorid,in
   );
   return response;
   
+}
+
+Future<http.Response> UpdateAppointment(int id, DateTime date, DateTime time, int doctorid, int patientid) async {
+ 
+    final Map<String, dynamic> data = <String, dynamic>{};
+   
+    data['date'] = date;
+    data['time'] = time;
+    data['status'] = false;
+    data['doctorid'] = doctorid;
+    data['patientid'] = patientid;
+    
+  String userJson=jsonEncode(data);
+  
+  String url='${baseurl}addAppointment';
+  var response = await http.post(
+    Uri.parse(url),
+    headers: {"Content-Type": "application/json"},  // Set content type to JSON
+    body: userJson,  // Send the JSON directly in the body
+  );
+  return response;
+}
+
+Future<http.Response> AddPrescribtion(int appId,String prescription) async {
+  
+  final Map<String, dynamic> data = <String, dynamic>{};
+   
+    data['prescribtion'] = prescription;
+    data['appId'] = appId;
+    data['appStatus'] = true;
+   
+    
+  String json=jsonEncode(data);
+  
+  String url='${baseurl}prescribe';
+  var response = await http.post(
+    Uri.parse(url),
+    headers: {"Content-Type": "application/json"},  // Set content type to JSON
+    body: json,  // Send the JSON directly in the body
+  );
+  return response;
 }
 }
 

@@ -12,7 +12,8 @@ import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class AllDoctorsScreen extends StatefulWidget {
-  const AllDoctorsScreen({super.key});
+  final int id;
+  const AllDoctorsScreen({super.key, required this.id});
 
   @override
   State<AllDoctorsScreen> createState() => _AllDoctorsScreenState();
@@ -21,9 +22,20 @@ class AllDoctorsScreen extends StatefulWidget {
 class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
   TextEditingController _contDate = TextEditingController();
   TextEditingController _contTime = TextEditingController();
-  
+
+  List<String> _timeSlots = [
+    "10:00:00",
+    "11:00:00",
+    "12:00:00",
+    "1:00:00",
+    "2:00:00",
+    "3:00:00",
+    "4:00:00",
+    "5:00:00",
+  ];
+
   // Initialize _doctors with an empty list
- 
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -33,139 +45,171 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
     );
     if (picked != null && picked != DateTime.now()) {
       setState(() {
-        _contDate.text = "${picked.day}/${picked.month}/${picked.year}"; // Format date as needed
+        _contDate.text =
+            "${picked.year}-${picked.month}-${picked.day}"; // Format date as needed
       });
     }
   }
-  
-  _scheduleDialog(){
+
+  _scheduleDialog(String? doctorid) async {
+    // Fetch doctor details using doctorid
+    Doctor d=await APIHandler().GetDoctorByEmail(doctorid!);
     return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Schedule Appointment"),
-          alignment: Alignment.center,
-          content: Column(
-            mainAxisSize: MainAxisSize.min, // Ensure content size is controlled
-            children: [
-              MyTextFormField2(
-                controller: _contDate,
-                hintText: "Date",
-                labelText: "Date",
-                icon: IconButton(onPressed: (){
-                  _selectDate(context);
-                }, icon: Icon(
-                  Icons.calendar_today_outlined,
-                  color: maincolor,
-                )),
-              ),
-              const SizedBox(height: 10),
-              MyTextFormField(
-                controller: _contTime,
-                hintText: "Time",
-                labelText: "Time",
-              ),
-              const SizedBox(height: 30),
-              Button2(text: "Schedule", onTap: () {}),
-              const SizedBox(height: 10),
-              Button2(text: "Cancel", onTap: () {
-                Navigator.pop(context);
-              }),
-            ],
-          ),
-        );
-      }
-    );
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Schedule Appointment"),
+            alignment: Alignment.center,
+            content: Column(
+              mainAxisSize:
+                  MainAxisSize.min, // Ensure content size is controlled
+              children: [
+                MyTextFormField2(
+                  controller: _contDate,
+                  hintText: "Date",
+                  labelText: "Date",
+                  icon: IconButton(
+                      onPressed: () {
+                        _selectDate(context);
+                      },
+                      icon: Icon(
+                        Icons.calendar_today_outlined,
+                        color: maincolor,
+                      )),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: _timeSlots.isNotEmpty ? _timeSlots.first : null,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _contTime.text = newValue ?? '';
+                    });
+                  },
+                  items:
+                      _timeSlots.map<DropdownMenuItem<String>>((String time) {
+                    return DropdownMenuItem<String>(
+                      value: time,
+                      child: Text(time),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    hintText: "Time",
+                    labelText: "Time",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 30),
+                Button2(text: "Schedule", onTap: () async {
+                  await APIHandler().AddAppointment(_contDate.text, _contTime.text, d.id!,widget.id);
+                }),
+                const SizedBox(height: 10),
+                Button2(
+                    text: "Cancel",
+                    onTap: () {
+                      Navigator.pop(context);
+                    }),
+              ],
+            ),
+          );
+        });
   }
-  late List<dynamic> ?_doctors=[] ;
+
+  late List<dynamic>? _doctors = [];
   bool _isLoading = true; // To show loading indicator while fetching data
 
   _fetchDoctors() async {
     // Fetch doctors and set _doctors
     _doctors = await APIHandler().AllDoctors();
     setState(() {
-     // _isLoading = false; // Data is loaded
+      // _isLoading = false; // Data is loaded
     });
   }
 
   @override
   void initState() {
     super.initState();
-   _fetchDoctors(); // Fetch doctors data when the screen initializes
+    _fetchDoctors(); // Fetch doctors data when the screen initializes
   }
 
   @override
   Widget build(BuildContext context) {
-   // _fetchDoctors();
+    // _fetchDoctors();
     return Scaffold(
       appBar: AppBar(
         title: const Text("Doctors"),
         backgroundColor: primary,
       ),
-      body: _doctors?.length==0
-        ? const Center(child: CircularProgressIndicator()) // Show loading indicator
-        : SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              ListView.builder(
-                shrinkWrap: true, // Add this line
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _doctors?.length,
-                itemBuilder: (context, index) {
-                  Doctor d = _doctors![index];
-                  return SizedBox(
-                    width: 30,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
-                      child: Card(
-                        child: Container(
-                          width: 30,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+      body: _doctors?.length == 0
+          ? const Center(
+              child: CircularProgressIndicator()) // Show loading indicator
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  ListView.builder(
+                    shrinkWrap: true, // Add this line
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _doctors?.length,
+                    itemBuilder: (context, index) {
+                      Doctor d = _doctors![index];
+                      return SizedBox(
+                        width: 30,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20, right: 20, top: 5),
+                          child: Card(
+                            child: Container(
+                              width: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(10.0),
-                                    child: CircleAvatar(
-                                      radius: 40,
-                                      backgroundImage: d.imgpath != null 
-                                        ? NetworkImage("${APIHandler().baseurl}/image/${d.imgpath!}") as ImageProvider
-                                        : AssetImage('assets/images/person.png'),
-                                    ),
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: CircleAvatar(
+                                          radius: 40,
+                                          backgroundImage: d.imgpath != null
+                                              ? NetworkImage(
+                                                      "${APIHandler().baseurl}/image/${d.imgpath!}")
+                                                  as ImageProvider
+                                              : AssetImage(
+                                                  'assets/images/person.png'),
+                                        ),
+                                      ),
+                                      Text("${d.name}"),
+                                    ],
                                   ),
-                                  Text("${d.name}"),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      const SizedBox(width: 20),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Button1(
+                                          text: "Schedule Appointment",
+                                          onTap: () {
+                                            _scheduleDialog(d.email);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
                                 ],
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  const SizedBox(width: 20),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Button1(
-                                      text: "Schedule Appointment",
-                                      onTap: () {
-                                        _scheduleDialog();
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-              )
-            ],
-          ),
-        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
     );
   }
 }
