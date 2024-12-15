@@ -12,7 +12,7 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.0.101:5000/";
+  String baseurl="http://192.168.0.102:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -225,5 +225,22 @@ Future<http.Response> AddPrescribtion(int appId,String prescription) async {
   );
   return response;
 }
+Future<List<dynamic>> GetEEGData() async {
+  String url = "${baseurl}eeg_bands";
+  var response = await http.get(Uri.parse(url));
+ if (response.statusCode == 200) {
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse is Map<String, dynamic>) {
+      // Transform the Map to a List of its values
+      return jsonResponse.values.toList();
+    } else {
+      throw Exception("Unexpected response format: Expected a Map");
+    }
+  } else {
+    throw Exception("Failed to load data, status code: ${response.statusCode}");
+  }
+}
+
 }
 
