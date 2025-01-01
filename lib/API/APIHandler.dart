@@ -12,7 +12,7 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.0.102:5000/";
+  String baseurl="http://192.168.0.106:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -239,6 +239,30 @@ Future<List<dynamic>> GetEEGData() async {
     }
   } else {
     throw Exception("Failed to load data, status code: ${response.statusCode}");
+  }
+}
+
+Future<List<dynamic>> getTimeSlots(String date, String doctorId) async {
+  String url = "${baseurl}getTimeSlots";
+  
+  // Sending the POST request
+  var response = await http.post(
+    Uri.parse(url),
+    body: {
+     
+      'date': date,
+      'doctor_id': doctorId,
+    },
+  );
+
+  // Decode the response
+  if (response.statusCode == 200) {
+    var jsonResponse = jsonDecode(response.body);
+    return jsonResponse; // Return the decoded JSON directly
+  } else if (response.statusCode == 405) {
+    throw Exception("Slots not found");
+  } else {
+    throw Exception("Failed to fetch slots: ${response.body}");
   }
 }
 

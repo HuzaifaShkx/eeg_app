@@ -31,7 +31,7 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
     "2:00:00",
     "3:00:00",
     "4:00:00",
-    "5:00:00",
+    "5:00:00"
   ];
 
   // Initialize _doctors with an empty list
@@ -42,6 +42,7 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
+      
     );
     if (picked != null && picked != DateTime.now()) {
       setState(() {
@@ -51,6 +52,7 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
     }
   }
 
+  
   _scheduleDialog(String? doctorid) async {
     // Fetch doctor details using doctorid
     Doctor d=await APIHandler().GetDoctorByEmail(doctorid!);
@@ -100,7 +102,17 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
                 ),
                 SizedBox(height: 30),
                 Button2(text: "Schedule", onTap: () async {
-                  await APIHandler().AddAppointment(_contDate.text, _contTime.text, d.id!,widget.id);
+                final response= await APIHandler().AddAppointment(_contDate.text, _contTime.text, d.id!,widget.id);
+                   if (response.statusCode == 200) { // Assuming 200 means success
+        Navigator.pop(context); // Close the dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Appointment Booked Successfully")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to book the appointment: ${response.body}")),
+        );
+      }
                 }),
                 const SizedBox(height: 10),
                 Button2(
@@ -113,6 +125,7 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
           );
         });
   }
+
 
   late List<dynamic>? _doctors = [];
   bool _isLoading = true; // To show loading indicator while fetching data
