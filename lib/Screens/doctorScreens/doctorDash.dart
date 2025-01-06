@@ -1,5 +1,6 @@
 import 'package:eeg_app/API/APIHandler.dart';
 import 'package:eeg_app/Custom%20Widget/color.dart';
+import 'package:eeg_app/Screens/SignupScreens/supervisorSignup.dart';
 import 'package:eeg_app/Screens/doctorScreens/doctor_appointments.dart';
 import 'package:eeg_app/Screens/doctorScreens/doctor_patients.dart';
 import 'package:eeg_app/Screens/doctorScreens/resultScreen.dart';
@@ -78,7 +79,16 @@ class _DoctorDashState extends State<DoctorDash> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=> DoctorAppointmentScreen(doctor: widget.doctor,)));
               },
             ),
-            
+             ListTile(
+              leading: Icon(Icons.group_add,color: Colors.white,),
+              title:  Text(
+                "Register Supervisor",
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> SupervisorSignup(doctorid:doctorId!)));
+              },
+            ),
             ListTile(
               leading: Icon(Icons.logout,color: Colors.white,),
               title: Text(

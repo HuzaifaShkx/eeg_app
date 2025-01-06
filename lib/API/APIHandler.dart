@@ -12,7 +12,7 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.0.106:5000/";
+  String baseurl="http://192.168.43.189:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -50,7 +50,7 @@ Future<http.Response> DoctorSignup({
 
   Future<http.Response> SupervisorSignup({
    File? image_file,
-    required User user
+    required Supervisor user
   })async
   {
     String url='${baseurl}SupervisorSignup';

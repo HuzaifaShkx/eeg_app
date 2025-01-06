@@ -7,13 +7,15 @@ import 'package:eeg_app/Custom%20Widget/genderField.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild1.dart';
 import 'package:eeg_app/Custom%20Widget/textFormFeild2.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
+import 'package:eeg_app/model/supervisor.dart';
 import 'package:eeg_app/model/user.dart';
 import 'package:eeg_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SupervisorSignup extends StatefulWidget {
-  const SupervisorSignup({super.key});
+  final int doctorid;
+  const SupervisorSignup({super.key, required this.doctorid});
 
   @override
   State<SupervisorSignup> createState() => _SupervisorSignupState();
@@ -132,14 +134,18 @@ class _SupervisorSignupState extends State<SupervisorSignup> {
               height: 20,
             ),
             Button2(
-              text: "SignUp",
+              text: "Register",
               onTap: () async {
-                User u=User(contact:_contContact.text,dob: _contDob.text,gender: _contGender.text=="Male"?"M":_contGender=="Female"?"F":"",email: _contEmail.text,name: _contName.text,password: _contPassword.text,role: "supervisor");
+                Supervisor u=Supervisor(dob: _contDob.text,gender: _contGender.text=="Male"?"M":_contGender=="Female"?"F":"",email: _contEmail.text,name: _contName.text,password: _contPassword.text,role: "supervisor", contact: _contContact.text,doctorId: widget.doctorid);
                 var res=await APIHandler().SupervisorSignup(image_file: _img, user: u);
                 if(res.statusCode==200){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
-                }else if(res.statusCode==404){
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Supervior Registered Successfully"),duration: const Duration(seconds: 3),backgroundColor: maincolor,));
+                  Navigator.pop(context);
+                  //Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+                }else if(res.statusCode==409){
                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("User with the same email already exists"),duration: const Duration(seconds: 3),backgroundColor: maincolor,));
+                }else if(res.statusCode==500){
+                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Server Error"),duration: const Duration(seconds: 3),backgroundColor: maincolor,));
                 }
               },
             ),

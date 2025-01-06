@@ -37,9 +37,9 @@ class _RoleScreenState extends State<RoleScreen> {
           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const PatientSignUp()));
         }),
         const SizedBox(height: 20,),
-        Button1(text: "Supervisor", onTap: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const SupervisorSignup()));
-        }),
+        // Button1(text: "Supervisor", onTap: (){
+        //   Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const SupervisorSignup()));
+        // }),
         const SizedBox(height: 40,),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

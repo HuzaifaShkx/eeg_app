@@ -1,31 +1,39 @@
-class Supervisor {
-  String? dob;
-  String? email;
-  String? gender;
-  int? id;
-  String? imgpath;
-  String? name;
+import 'package:eeg_app/model/user.dart';
 
-  Supervisor(
-      {this.dob, this.email, this.gender, this.id, this.imgpath, this.name});
+class Supervisor extends User {
+  int? doctorId; // Supervisor-specific field
+  String? imgpath;  // Supervisor-specific field
 
-  Supervisor.fromJson(Map<String, dynamic> json) {
-    dob = json['dob'];
-    email = json['email'];
-    gender = json['gender'];
-    id = json['id'];
-    imgpath = json['imgpath'];
-    name = json['name'];
-  }
+  Supervisor({
+    required String contact,
+    required String dob,
+    required String gender,
+    required String email,
+    required String name,
+    required String password,
+    required String role,
+    required this.doctorId,
+   this.imgpath,
+  }) : super(
+          contact: contact,
+          dob: dob,
+          gender: gender,
+          email: email,
+          name: name,
+          password: password,
+          role: role,
+        );
 
+  Supervisor.fromJson(Map<String, dynamic> json)
+      : doctorId = json['doctor_id'],
+        imgpath = json['imgpath'],
+        super.fromJson(json); // Initialize User fields from JSON
+
+  @override
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['dob'] = this.dob;
-    data['email'] = this.email;
-    data['gender'] = this.gender;
-    data['id'] = this.id;
-    data['imgpath'] = this.imgpath;
-    data['name'] = this.name;
+    final data = super.toJson(); // Get User fields as a JSON map
+    data['doctor_id'] = doctorId; // Add Supervisor-specific fields
+    data['imgpath'] = imgpath;
     return data;
   }
 }
