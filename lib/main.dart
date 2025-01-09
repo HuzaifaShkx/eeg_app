@@ -16,6 +16,7 @@ import 'package:eeg_app/Screens/splash_Screen.dart';
 import 'package:eeg_app/Screens/supervisorDash.dart';
 import 'package:eeg_app/Screens/supervisorHome.dart';
 import 'package:eeg_app/Screens/supervisor_upload_screen.dart';
+import 'package:eeg_app/supervisorDashboard2.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF7C0909)),
         useMaterial3: true,
       ),
-      home: SplashScreen(),
+      home: Supervisordashboard2(),
     );
   }
 }
