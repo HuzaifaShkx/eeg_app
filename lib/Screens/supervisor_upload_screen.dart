@@ -9,20 +9,20 @@ import 'package:flutter/material.dart';
 //import 'package:provider/provider.dart';
 //import 'supervisor_provider.dart';
 
-class SupervisorScreen extends StatefulWidget {
-  const SupervisorScreen( {super.key});
+class SupervisorUploadScreen extends StatefulWidget {
+  const SupervisorUploadScreen( {super.key});
 
   @override
-  State<SupervisorScreen> createState() => _SupervisorScreenState();
+  State<SupervisorUploadScreen> createState() => _SupervisorUploadScreenState();
 }
 
-class _SupervisorScreenState extends State<SupervisorScreen> {
+class _SupervisorUploadScreenState extends State<SupervisorUploadScreen> {
   File? selectedFile;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Supervisor'),
+        title: const Text('Upload Experiment'),
         // leading: IconButton(
         //   icon: const Icon(Icons.arrow_back),
         //   onPressed: () {
@@ -30,35 +30,21 @@ class _SupervisorScreenState extends State<SupervisorScreen> {
         //   },
         // ),
       ),
-      drawer: Drawer(
-        backgroundColor: primary,
-        child: Column(
-        children: [
-          SizedBox(height: 100,),
-          ListTile(
-            leading: Icon(Icons.logout,color: Colors.white,),
-            title: Text("Logout",style: TextStyle(color: Colors.white),),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>LoginScreen()));
-            },
-          )
-        ],
-      ),),
+      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDropdown(context, 'Patient', 'Select Patient', (String value) {
-             // Provider.of<SupervisorProvider>(context, listen: false).selectPatient(value);
-            }),
-            const SizedBox(height: 16),
-            _buildDropdown(context, 'Select Video', 'Select Video', (String value) {
-              //Provider.of<SupervisorProvider>(context, listen: false).selectVideo(value);
-            }),
-            const SizedBox(height: 24),
-            //Center(child: Button1(text: "Start", onTap: (){})),
+            // _buildDropdown(context, 'Patient', 'Select Patient', (String value) {
+            //  // Provider.of<SupervisorProvider>(context, listen: false).selectPatient(value);
+            // }),
+            // const SizedBox(height: 16),
+            // _buildDropdown(context, 'Select Video', 'Select Video', (String value) {
+            //   //Provider.of<SupervisorProvider>(context, listen: false).selectVideo(value);
+            // }),
+            // const SizedBox(height: 24),
+            // //Center(child: Button1(text: "Start", onTap: (){})),
             const SizedBox(height: 32),
             _buildAttachRow(context, 'Attach EEG', Icons.add_box),
             const SizedBox(height: 16),

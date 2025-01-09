@@ -48,7 +48,7 @@ class _SupervisorHomeState extends State<SupervisorHome> {
               }),
             ),
             Button1(text: "Upload Files", onTap: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SupervisorScreen()));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SupervisorUploadScreen()));
             }),
           ],
         ),

@@ -1,31 +1,48 @@
 import 'package:eeg_app/API/APIHandler.dart';
+import 'package:eeg_app/Custom%20Widget/button1.dart';
+import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/color.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
+import 'package:eeg_app/Screens/supervisor_upload_screen.dart';
+import 'package:eeg_app/model/supervisor.dart';
 import 'package:flutter/material.dart';
 
 class Supervisordashboard2 extends StatefulWidget {
-  const Supervisordashboard2({super.key});
+  final Supervisor supervisor;
+  const Supervisordashboard2({super.key, required this.supervisor});
 
   @override
   State<Supervisordashboard2> createState() => _Supervisordashboard2State();
 }
 
 class _Supervisordashboard2State extends State<Supervisordashboard2> {
+
   List<dynamic> _patients = [];
+   late final doctorId;
   _getPatient() async {
-     _patients=await APIHandler().GetNewPatients(5);
+    
+    if(doctorId!=null){
+     _patients=await APIHandler().GetNewPatients(doctorId!);
       setState(() {
        
     });
+    }
+  }
+  _getDoctorId() async {
+    
+     doctorId=await APIHandler().GetSupervisorDoctor(widget.supervisor.id!);
+      setState(() {});
+    
   }
   @override
   void initState() {
     super.initState();
-    _getPatient();
+    _getDoctorId();
+    
   }
   @override
   Widget build(BuildContext context) {
-  
+  _getPatient();
     return Scaffold(
       appBar: AppBar(title: Text("Supervisor Dashboard"),),
       drawer: Drawer(
@@ -192,9 +209,12 @@ class _Supervisordashboard2State extends State<Supervisordashboard2> {
                               ),
                               Padding(
                                padding: EdgeInsets.all(10.0),
-                               child: Text("${p["name"]}"),
+                               child: Text("${p["name"]}",style: TextStyle(fontSize: 27),),
                              ),
-          
+                            Center(child: Button2(text: "Start Session", onTap: (){
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SupervisorUploadScreen()));
+                            })),
+                            SizedBox(height: 10,),
                              Container(
                               decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(6),bottomRight: Radius.circular(6),),

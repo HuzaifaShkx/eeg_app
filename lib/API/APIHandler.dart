@@ -12,7 +12,7 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.0.104:5000/";
+  String baseurl="http://192.168.0.102:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -266,5 +266,13 @@ Future<List<dynamic>> getTimeSlots(String date, String doctorId) async {
   }
 }
 
+Future<int> GetSupervisorDoctor(int supId) async {
+  String url = "${baseurl}getSupervisorDoctor/$supId";
+  var response = await http.get(Uri.parse(url));
+  var jsonResponse = jsonDecode(response.body);
+  print(jsonResponse["doctor_id"]);
+  return jsonResponse["doctor_id"];
+  //return jsonResponse.map((dynamic data) => data).toList();
+}
 }
 

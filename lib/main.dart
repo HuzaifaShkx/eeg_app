@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF7C0909)),
         useMaterial3: true,
       ),
-      home: Supervisordashboard2(),
+      home: SplashScreen(),
     );
   }
 }

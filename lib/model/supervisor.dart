@@ -3,7 +3,7 @@ import 'package:eeg_app/model/user.dart';
 class Supervisor extends User {
   int? doctorId; // Supervisor-specific field
   String? imgpath;  // Supervisor-specific field
-
+  int? id;
   Supervisor({
     required String contact,
     required String dob,
@@ -13,6 +13,8 @@ class Supervisor extends User {
     required String password,
     required String role,
     required this.doctorId,
+    this.id,
+    
    this.imgpath,
   }) : super(
           contact: contact,
@@ -27,6 +29,7 @@ class Supervisor extends User {
   Supervisor.fromJson(Map<String, dynamic> json)
       : doctorId = json['doctor_id'],
         imgpath = json['imgpath'],
+        id = json['id'],
         super.fromJson(json); // Initialize User fields from JSON
 
   @override
