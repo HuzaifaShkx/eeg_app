@@ -27,16 +27,45 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
     "10:00:00",
     "11:00:00",
     "12:00:00",
-    "1:00:00",
-    "2:00:00",
-    "3:00:00",
-    "4:00:00",
-    "5:00:00"
+    "01:00:00",
+    "02:00:00",
+    "03:00:00",
+    "04:00:00",
+    "05:00:00"
   ];
 
   // Initialize _doctors with an empty list
 
-  Future<void> _selectDate(BuildContext context) async {
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime.now(),
+  //     lastDate: DateTime(2101),
+      
+  //   );
+  //   if (picked != null && picked != DateTime.now()) {
+  //     setState(() {
+  //       _contDate.text =
+  //           "${picked.year}-${picked.month}-${picked.day}"; // Format date as needed
+  //             isLoading = true;
+  //               availableTimeSlots = []; // Reset available slots while loading
+  //               _contTime.text = ''; // Reset selected time
+  //     });
+  //   }
+  // }
+
+  
+  _scheduleDialog(String? doctorid) async {
+    if (doctorid == null) return;
+    // Fetch doctor details using doctorid
+    Doctor d=await APIHandler().GetDoctorByEmail(doctorid!);
+    List<String> availableTimeSlots = List.from(_timeSlots);
+  bool isLoading = false;
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -48,17 +77,38 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
       setState(() {
         _contDate.text =
             "${picked.year}-${picked.month}-${picked.day}"; // Format date as needed
+              isLoading = true;
+                availableTimeSlots = []; // Reset available slots while loading
+                _contTime.text = ''; // Reset selected time
       });
+      try{
+         List<String> bookedSlots=await APIHandler().getTimeSlots(_contDate.text, d.id!);
+
+               
+          
+                  // Compute available slots by excluding booked slots
+                  availableTimeSlots = _timeSlots
+                      .where((slot) => !bookedSlots.contains(slot))
+                      .toList();
+                  isLoading = false;
+                  // Automatically select the first available slot if any
+                  _contTime.text = availableTimeSlots.isNotEmpty
+                      ? availableTimeSlots.first
+                      : '';
+                  
+                setState(() { });
+
+      }catch(e) {
+         setState(() {
+                  isLoading = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Error fetching slots: $e")),
+                );
+      }
     }
   }
 
-  
-  _scheduleDialog(String? doctorid) async {
-    // Fetch doctor details using doctorid
-    Doctor d=await APIHandler().GetDoctorByEmail(doctorid!);
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
           return AlertDialog(
             title: const Text("Schedule Appointment"),
             alignment: Alignment.center,
@@ -73,6 +123,7 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
                   icon: IconButton(
                       onPressed: () {
                         _selectDate(context);
+                       
                       },
                       icon: Icon(
                         Icons.calendar_today_outlined,
@@ -80,15 +131,16 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
                       )),
                 ),
                 const SizedBox(height: 10),
+               // _isLoading==true?CircularProgressIndicator():
                 DropdownButtonFormField<String>(
-                  value: _timeSlots.isNotEmpty ? _timeSlots.first : null,
+                  value: availableTimeSlots.isNotEmpty ? availableTimeSlots.first : null,
                   onChanged: (String? newValue) {
                     setState(() {
                       _contTime.text = newValue ?? '';
                     });
                   },
                   items:
-                      _timeSlots.map<DropdownMenuItem<String>>((String time) {
+                      availableTimeSlots.map<DropdownMenuItem<String>>((String time) {
                     return DropdownMenuItem<String>(
                       value: time,
                       child: Text(time),

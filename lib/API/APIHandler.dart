@@ -12,7 +12,7 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.0.102:5000/";
+  String baseurl="http://192.168.0.100:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -242,30 +242,61 @@ Future<List<dynamic>> GetEEGData() async {
   }
 }
 
-Future<List<dynamic>> getTimeSlots(String date, String doctorId) async {
-  String url = "${baseurl}getTimeSlots";
+// Future<List<int>> getTimeSlots(String date, int doctorId) async {
+//   String url = "${baseurl}getTimeSlots";
   
-  // Sending the POST request
-  var response = await http.post(
-    Uri.parse(url),
-    body: {
+//   // Sending the POST request
+//   var response = await http.post(
+//     Uri.parse(url),
+//     body: {
      
-      'date': date,
-      'doctor_id': doctorId,
-    },
-  );
+//       'date': date,
+//       'doctor_id': doctorId,
+//     },
+//   );
 
-  // Decode the response
-  if (response.statusCode == 200) {
-    var jsonResponse = jsonDecode(response.body);
-    return jsonResponse; // Return the decoded JSON directly
-  } else if (response.statusCode == 405) {
-    throw Exception("Slots not found");
-  } else {
-    throw Exception("Failed to fetch slots: ${response.body}");
+//   // Decode the response
+//   if (response.statusCode == 200) {
+//     var jsonResponse = jsonDecode(response.body);
+//      // Extract the 'time' from each booked slot
+//     List<int> bookedTimes = jsonResponse.map((slot) => slot['time']).toList();
+//     return bookedTimes;
+//      // Return the decoded JSON directly
+//   } else if (response.statusCode == 405) {
+//     throw Exception("Slots not found");
+//   } else {
+//     throw Exception("Failed to fetch slots: ${response.body}");
+//   }
+// }
+
+// Fetch booked time slots
+  Future<List<String>> getTimeSlots(String date, int doctorId) async {
+    final String url = "${baseurl}getTimeSlots";
+    
+    final response = await http.post(
+      Uri.parse(url),
+      body: {
+        'date': date,
+        'doctor_id': doctorId.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      // Extract 'time' as String from each slot
+      List<String> bookedTimes = jsonResponse.map<String>((slot) {
+        // Ensure 'time' is treated as String
+        return slot['time'].split('.')[0].toString();
+      }).toList();
+      return bookedTimes;
+    } else if (response.statusCode == 404) {
+      // No slots booked for this date
+      return [];
+    } else {
+      // Handle other errors
+      throw Exception("Failed to fetch booked slots: ${response.body}");
+    }
   }
-}
-
 Future<int> GetSupervisorDoctor(int supId) async {
   String url = "${baseurl}getSupervisorDoctor/$supId";
   var response = await http.get(Uri.parse(url));
