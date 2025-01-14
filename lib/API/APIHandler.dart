@@ -126,6 +126,22 @@ Future<http.Response> DoctorSignup({
     throw Exception('Failed to load new patients');
   }
 }
+
+Future<List<dynamic>> GetTodaysAppointments(int id) async {
+  String url = "${baseurl}getTodaysAppointments/$id";
+  var response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Decode the JSON response into a List of dynamic objects
+    List<dynamic> jsonResponse = jsonDecode(response.body);
+
+    // Return the decoded list directly without mapping it to a model
+    return jsonResponse;
+  } else {
+    throw Exception('Failed to load new patients');
+  }
+}
+
   Future<Patient> GetPatientByEmail(String email) async{
     String url = "${baseurl}getPatientByEmail/$email";
     var response = await http.get(Uri.parse(url));

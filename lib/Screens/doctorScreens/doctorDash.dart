@@ -22,7 +22,7 @@ class _DoctorDashState extends State<DoctorDash> {
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> _patients = [];
   _getPatient() async {
-     _patients=await APIHandler().GetNewPatients(widget.doctor.id!);
+     _patients=await APIHandler().GetTodaysAppointments(widget.doctor.id!);
       setState(() {
        
     });
