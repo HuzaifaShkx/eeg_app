@@ -27,6 +27,11 @@ class _DoctorDashState extends State<DoctorDash> {
        
     });
   }
+  Future<Map<String,dynamic>> _getAppointmentDateTime(int did,int pid) async {
+    var data=await APIHandler().getAppointmentDateTime(did,pid);
+    return data;
+  }
+  
   @override
   void initState() {
     super.initState();
@@ -182,59 +187,100 @@ class _DoctorDashState extends State<DoctorDash> {
               //This Expanded allows the ListView to take up remaining space
               _patients.length==0?
               Text("No Appointments found"):
-              ListView.builder(
-                shrinkWrap: true, // Add this line
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _patients.length,
-                itemBuilder: (context, index) {
-                  dynamic p=_patients[index];
-                  return SizedBox(
-                    width: 30,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20,top: 5),
-                      child: Card(
-                        child: Container(
-                          width: 30,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                          //padding: EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                               Padding(
-                                padding: EdgeInsets.all(10.0),
-                                child: CircleAvatar(
-                                  radius: 40,
-                                  backgroundImage: 
-                                   p["imgpath"]!=null? NetworkImage("${APIHandler().baseurl}/image/${p["imgpath"]}") as ImageProvider
-                                        : AssetImage('assets/images/person.png'),
-                                 
-                                ),
-                              ),
-                              Padding(
-                               padding: EdgeInsets.all(10.0),
-                               child: Text("${p["name"]}"),
-                             ),
-          
-                             Container(
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(6),bottomRight: Radius.circular(6),),
-                                color: Color(0xFF7C0909) ,
-                              ),
-                              height: 30,
-                             width: double.infinity,
-                              alignment: Alignment.center,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [Icon(Icons.access_time,color: Colors.white,),Text("Time: 10:00 AM",style: TextStyle(color: Colors.white),),])),
-                            ],
-                            
-                          ),
+             ListView.builder(
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  itemCount: _patients.length,
+  itemBuilder: (context, index) {
+    dynamic p = _patients[index];
+    
+    return SizedBox(
+      width: 30,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
+        child: Card(
+          child: Container(
+            width: 30,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundImage: p["imgpath"] != null
+                        ? NetworkImage("${APIHandler().baseurl}/image/${p["imgpath"]}") as ImageProvider
+                        : AssetImage('assets/images/person.png'),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text("${p["name"]}"),
+                ),
+                FutureBuilder(
+                  future: _getAppointmentDateTime(widget.doctor.id!, p['id']),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        height: 30,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Container(
+                        height: 30,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Error loading time",
+                          style: TextStyle(color: Colors.red),
                         ),
-                      ),
-                    ),
-                  );
-                },
-              )
+                      );
+                    } else if (snapshot.hasData) {
+                      var data = snapshot.data as Map<String, dynamic>;
+                      return Container(
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(6),
+                            bottomRight: Radius.circular(6),
+                          ),
+                          color: Color(0xFF7C0909),
+                        ),
+                        height: 30,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(Icons.access_time, color: Colors.white),
+                            Text(
+                              "Time ${data['time'].toString().split('.')[0]}",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return Container(
+                        height: 30,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: Text("No time available"),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+)
+
             ],
           ),
         ),

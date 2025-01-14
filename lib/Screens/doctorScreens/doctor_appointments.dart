@@ -20,6 +20,10 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
        
     });
   }
+  Future<Map<String,dynamic>> _getAppointmentDateTime(int did,int pid) async {
+    var data=await APIHandler().getAppointmentDateTime(did,pid);
+    return data;
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -74,18 +78,69 @@ class _DoctorAppointmentScreenState extends State<DoctorAppointmentScreen> {
                                 //mainAxisAlignment: MainAxisAlignment.spaceAround,
                                  children: [
                                   const SizedBox(width: 10,),
-                                  Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(6),bottomRight: Radius.circular(6),topLeft: Radius.circular(6),topRight: Radius.circular(6)),
-                                      //color: Color(0xFF7C0909) ,
-                                      border: Border.all()
-                                    ),
-                                    height: 50,
-                                   width: 130,
-                                    alignment: Alignment.center,
-                                    child: const Text("Schedule Meeting on 10 june",style: TextStyle(color: Colors.black),)
-                                      ),
+                                 FutureBuilder(
+  future: _getAppointmentDateTime(widget.doctor.id!, p['id']),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Container(
+        height: 50,
+        width: 130,
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      );
+    } else if (snapshot.hasError) {
+      return Container(
+        height: 50,
+        width: 130,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.red),
+        ),
+        child: Text(
+          "Error loading date",
+          style: TextStyle(color: Colors.red),
+        ),
+      );
+    } else if (snapshot.hasData) {
+      var data = snapshot.data as Map<String, dynamic>;
+      
+      // Convert time to a readable date format
+      DateTime appointmentDate = DateTime.parse(data['date']);
+      String formattedDate = "${appointmentDate.day}/ ${appointmentDate.month}";
+
+      return Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.black),
+        ),
+        height: 50,
+        width: 130,
+        alignment: Alignment.center,
+        child: Text(
+          "Schedule Meeting on $formattedDate",
+          style: TextStyle(color: Colors.black),
+        ),
+      );
+    } else {
+      return Container(
+        height: 50,
+        width: 130,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.grey),
+        ),
+        child: Text(
+          "No date available",
+          style: TextStyle(color: Colors.grey),
+        ),
+      );
+    }
+  },
+),
+
                                   const SizedBox(width: 20,),
                                    InkWell(
                                     onTap: (){

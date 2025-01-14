@@ -12,7 +12,7 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.0.100:5000/";
+  String baseurl="http://192.168.0.101:5000/";
 
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -169,7 +169,7 @@ Future<http.Response> AddAppointment(String date,String time,int doctorid,int pa
     final Map<String, dynamic> data = <String, dynamic>{};
     data['date'] = date;
     data['time'] = time;
-    data['status'] = false;
+    data['status'] = 'false';
     data['doctorid'] = doctorid;
     data['patientid'] = patientid;
     
@@ -297,6 +297,32 @@ Future<List<dynamic>> GetEEGData() async {
       throw Exception("Failed to fetch booked slots: ${response.body}");
     }
   }
+
+  // Fetch appointment date and time
+Future<Map<String,dynamic>> getAppointmentDateTime(int docid, int patid) async {
+  final String url = "${baseurl}getNewPatientAppointmentDate/${docid}/${patid}";
+  
+  final response = await http.get(
+    Uri.parse(url),
+  );
+
+  if (response.statusCode == 200) {
+    // Parse the JSON response
+    final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    return jsonResponse;
+    // // Extract the 'date' and 'time' fields
+    // String date = jsonResponse['date'];
+    // String time = jsonResponse['time'].split('.')[0]; // Remove milliseconds
+
+    // // Return as a list of strings [date, time]
+    // return [date, time];
+  } else{
+    return {
+      "error":"not found"
+    };
+  }
+}
+
 Future<int> GetSupervisorDoctor(int supId) async {
   String url = "${baseurl}getSupervisorDoctor/$supId";
   var response = await http.get(Uri.parse(url));
