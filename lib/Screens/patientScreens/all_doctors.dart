@@ -56,127 +56,142 @@ class _AllDoctorsScreenState extends State<AllDoctorsScreen> {
   // }
 
   
-  _scheduleDialog(String? doctorid) async {
-    if (doctorid == null) return;
-    // Fetch doctor details using doctorid
-    Doctor d=await APIHandler().GetDoctorByEmail(doctorid!);
-    List<String> availableTimeSlots = List.from(_timeSlots);
-  bool isLoading = false;
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-      
-    );
-    if (picked != null && picked != DateTime.now()) {
-      setState(() {
-        _contDate.text =
-            "${picked.year}-${picked.month}-${picked.day}"; // Format date as needed
-              isLoading = true;
-                availableTimeSlots = []; // Reset available slots while loading
-                _contTime.text = ''; // Reset selected time
-      });
-      try{
-         List<String> bookedSlots=await APIHandler().getTimeSlots(_contDate.text, d.id!);
+_scheduleDialog(String? doctorid) async {
+  if (doctorid == null) return;
 
-               
-          
-                  // Compute available slots by excluding booked slots
+  Doctor d = await APIHandler().GetDoctorByEmail(doctorid!);
+  List<String> availableTimeSlots = List.from(_timeSlots);
+  bool isLoading = false;
+
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setDialogState) {
+          Future<void> _selectDate(BuildContext context) async {
+            final DateTime? picked = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime.now(),
+              lastDate: DateTime(2101),
+            );
+            if (picked != null) {
+              setDialogState(() {
+                _contDate.text = "${picked.year}-${picked.month}-${picked.day}";
+                isLoading = true;
+                availableTimeSlots = []; // Reset slots
+                _contTime.text = ''; // Reset selected time
+              });
+
+              try {
+                List<String> bookedSlots =
+                    await APIHandler().getTimeSlots(_contDate.text, d.id!);
+
+                setDialogState(() {
                   availableTimeSlots = _timeSlots
                       .where((slot) => !bookedSlots.contains(slot))
                       .toList();
                   isLoading = false;
-                  // Automatically select the first available slot if any
+                  // Set the first available slot if present
                   _contTime.text = availableTimeSlots.isNotEmpty
                       ? availableTimeSlots.first
                       : '';
-                  
-                setState(() { });
-
-      }catch(e) {
-         setState(() {
+                });
+              } catch (e) {
+                setDialogState(() {
                   isLoading = false;
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("Error fetching slots: $e")),
                 );
-      }
-    }
-  }
+              }
+            }
+          }
 
           return AlertDialog(
             title: const Text("Schedule Appointment"),
             alignment: Alignment.center,
-            content: Column(
-              mainAxisSize:
-                  MainAxisSize.min, // Ensure content size is controlled
-              children: [
-                MyTextFormField2(
-                  controller: _contDate,
-                  hintText: "Date",
-                  labelText: "Date",
-                  icon: IconButton(
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  MyTextFormField2(
+                    controller: _contDate,
+                    hintText: "Date",
+                    labelText: "Date",
+                    icon: IconButton(
                       onPressed: () {
                         _selectDate(context);
-                       
                       },
                       icon: Icon(
                         Icons.calendar_today_outlined,
                         color: maincolor,
-                      )),
-                ),
-                const SizedBox(height: 10),
-               // _isLoading==true?CircularProgressIndicator():
-                DropdownButtonFormField<String>(
-                  value: availableTimeSlots.isNotEmpty ? availableTimeSlots.first : null,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _contTime.text = newValue ?? '';
-                    });
-                  },
-                  items:
-                      availableTimeSlots.map<DropdownMenuItem<String>>((String time) {
-                    return DropdownMenuItem<String>(
-                      value: time,
-                      child: Text(time),
-                    );
-                  }).toList(),
-                  decoration: InputDecoration(
-                    hintText: "Time",
-                    labelText: "Time",
-                    border: OutlineInputBorder(),
+                      ),
+                    ),
                   ),
-                ),
-                SizedBox(height: 30),
-                Button2(text: "Schedule", onTap: () async {
-                final response= await APIHandler().AddAppointment(_contDate.text, _contTime.text, d.id!,widget.id);
-                   if (response.statusCode == 200) { // Assuming 200 means success
-        Navigator.pop(context); // Close the dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Appointment Booked Successfully")),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to book the appointment: ${response.body}")),
-        );
-      }
-                }),
-                const SizedBox(height: 10),
-                Button2(
+                  const SizedBox(height: 10),
+                  isLoading
+                      ? CircularProgressIndicator()
+                      : DropdownButtonFormField<String>(
+                          value: availableTimeSlots.isNotEmpty
+                              ? availableTimeSlots.first
+                              : null,
+                          onChanged: (String? newValue) {
+                            setDialogState(() {
+                              _contTime.text = newValue ?? '';
+                            });
+                          },
+                          items: availableTimeSlots
+                              .map<DropdownMenuItem<String>>(
+                                  (String time) {
+                            return DropdownMenuItem<String>(
+                              value: time,
+                              child: Text(time),
+                            );
+                          }).toList(),
+                          decoration: InputDecoration(
+                            hintText: "Time",
+                            labelText: "Time",
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                  const SizedBox(height: 30),
+                  Button2(
+                    text: "Schedule",
+                    onTap: () async {
+                      final response = await APIHandler().AddAppointment(
+                          _contDate.text, _contTime.text, d.id!, widget.id);
+                      if (response.statusCode == 200) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text("Appointment Booked Successfully")),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  "Failed to book the appointment: ${response.body}")),
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Button2(
                     text: "Cancel",
                     onTap: () {
                       Navigator.pop(context);
-                    }),
-              ],
+                    },
+                  ),
+                ],
+              ),
             ),
           );
-        });
-  }
+        },
+      );
+    },
+  );
+}
 
 
   late List<dynamic>? _doctors = [];
