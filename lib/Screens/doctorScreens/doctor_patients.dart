@@ -80,7 +80,7 @@ class _DoctorPatientScreenState extends State<DoctorPatientScreen> {
                                    Align(
                                     alignment: Alignment.centerRight,
                                      child: Button2(text: "View Details",onTap: (){
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> PatientDetailScreen(id:patients[index].id)));
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> PatientDetailScreen(id:patients[index].id,doctorid: widget.doctorId!,)));
                                      },)
                                    ),
                                  ],

@@ -1,17 +1,28 @@
 import 'package:eeg_app/API/APIHandler.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/color.dart';
+import 'package:eeg_app/Screens/doctorScreens/ExperimentScreen.dart';
 import 'package:eeg_app/Screens/doctorScreens/patient_prescribtion.dart';
 import 'package:eeg_app/Screens/doctorScreens/resultScreen.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
 import 'package:eeg_app/Screens/patientScreens/all_doctors.dart';
+import 'package:eeg_app/Screens/patientScreens/experimentScreenP.dart';
 import 'package:eeg_app/Screens/patientScreens/resultScreen_p.dart';
 import 'package:eeg_app/model/patient.dart';
 import 'package:flutter/material.dart';
 
-class PatientDetailPa extends StatelessWidget {
+class PatientDetailPa extends StatefulWidget {
   final Patient patient;
+
   PatientDetailPa({super.key, required this.patient});
+
+  @override
+  State<PatientDetailPa> createState() => _PatientDetailPaState();
+}
+
+class _PatientDetailPaState extends State<PatientDetailPa> {
+  var sessions;
+
   int calculateAge(DateTime birthDate) {
     DateTime today = DateTime.now();
     int age = today.year - birthDate.year;
@@ -25,16 +36,31 @@ class PatientDetailPa extends StatelessWidget {
     return age;
   }
 
+  _getSessions() async {
+    var a =await APIHandler().GetSessionForPatient(widget.patient.id!);
+    if(a!=null){
+      setState(() {
+        sessions = a;
+      });
+    }
+   
+  }
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getSessions();
+  }
   @override
   Widget build(BuildContext context) {
-    List<String> dob = patient.dob!.split("-");
+    List<String> dob = widget.patient.dob!.split("-");
     DateTime birthDate =
         DateTime(int.parse(dob[0]), int.parse(dob[1]), int.parse(dob[2]));
     int age = calculateAge(birthDate);
     String? gender;
-    if (patient.gender == 'M') {
+    if (widget.patient.gender == 'M') {
       gender = "Male";
-    } else if (patient.gender == 'F') {
+    } else if (widget.patient.gender == 'F') {
       gender = "Female";
     }
     return Scaffold(
@@ -55,7 +81,7 @@ class PatientDetailPa extends StatelessWidget {
             ),
             onTap: () {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => AllDoctorsScreen(id:  patient.id!)));
+                  MaterialPageRoute(builder: (context) => AllDoctorsScreen(id:  widget.patient.id!)));
             },
           ),
           ListTile(
@@ -71,7 +97,7 @@ class PatientDetailPa extends StatelessWidget {
           ),
         ]),
       ),
-      body: SingleChildScrollView(
+      body:sessions==null?Center(child: CircularProgressIndicator()): SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(
@@ -88,10 +114,10 @@ class PatientDetailPa extends StatelessWidget {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                       image: DecorationImage(
-                          image: patient.imgpath == null
+                          image: widget.patient.imgpath == null
                               ? AssetImage('assets/images/person.png')
                               : NetworkImage(
-                                      "${APIHandler().baseurl}/image/${patient.imgpath}")
+                                      "${APIHandler().baseurl}/image/${widget.patient.imgpath}")
                                   as ImageProvider,
                           fit: BoxFit.cover)),
                 ),
@@ -112,7 +138,7 @@ class PatientDetailPa extends StatelessWidget {
                     border: Border.all(),
                     //color: Colors.grey[300]
                   ),
-                  child: Text("${patient.contact}"),
+                  child: Text("${widget.patient.contact}"),
                 )
               ],
             ),
@@ -126,7 +152,7 @@ class PatientDetailPa extends StatelessWidget {
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      "${patient.name}",
+                      "${widget.patient.name}",
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
                     )
@@ -159,7 +185,7 @@ class PatientDetailPa extends StatelessWidget {
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      "${patient.height}",
+                      "${widget.patient.height}",
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
                     )
@@ -170,7 +196,7 @@ class PatientDetailPa extends StatelessWidget {
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      "${patient.weight}",
+                      "${widget.patient.weight}",
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
                     )
@@ -181,16 +207,7 @@ class PatientDetailPa extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Button2(
-                    text: "Results",
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ResultscreenP(
-                                    id: patient.id!,
-                                  )));
-                    }),
+               
                 Button2(
                     text: "Medicine Info",
                     onTap: () {
@@ -198,7 +215,7 @@ class PatientDetailPa extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => PatientPrescribtion(
-                                    id: patient.id!,
+                                    id: widget.patient.id!,
                                   )));
                     })
               ],
@@ -221,16 +238,21 @@ class PatientDetailPa extends StatelessWidget {
                 child: ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 3,
+                    itemCount: sessions.length,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          alignment: Alignment.center,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                              color: Color.fromARGB(150, 239, 216, 220)),
-                          child: const Text("Meeting on 10"),
+                      return InkWell(
+                        onTap: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ExperimentScreenP(sessionid: sessions[index]['sessionid'])));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                                color: Color.fromARGB(150, 239, 216, 220)),
+                            child: Text("Session ${sessions[index]['sessionid']}"),
+                          ),
                         ),
                       );
                     }),

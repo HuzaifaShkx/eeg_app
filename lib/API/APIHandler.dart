@@ -12,8 +12,8 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://192.168.0.101:5000/";
-
+  String baseurl="http://172.16.14.147:5000/";
+  String baseurl2="http://192.168.43.189:5001/";
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
    var res=await http.post(Uri.parse(url),
@@ -241,8 +241,9 @@ Future<http.Response> AddPrescribtion(int appId,String prescription) async {
   );
   return response;
 }
-Future<List<dynamic>> GetEEGData() async {
-  String url = "${baseurl}eeg_bands";
+Future<List<dynamic>> GetEEGData(String filepath) async {
+  String f=filepath.split('/')[5];
+  String url = "${baseurl}eeg_bands_file/${f}";
   var response = await http.get(Uri.parse(url));
  if (response.statusCode == 200) {
     var jsonResponse = jsonDecode(response.body);
@@ -347,5 +348,90 @@ Future<int> GetSupervisorDoctor(int supId) async {
   return jsonResponse["doctor_id"];
   //return jsonResponse.map((dynamic data) => data).toList();
 }
+
+Future<http.Response> UploadEEG({
+   File? eeg_file,
+  
+  })async
+  {
+    String url='${baseurl}addEEG';
+    http.MultipartRequest request=http.MultipartRequest('POST',Uri.parse(url));
+    
+    
+    
+     if (eeg_file != null) {
+    var eegfile = await http.MultipartFile.fromPath('eeg', eeg_file.path);
+    request.files.add(eegfile);
+  }
+     var response= await request.send();
+     return http.Response.fromStream(response);
+
+  }
+
+  Future<http.Response> StartRecording(String filename) async {
+  String url = "${baseurl2}StartSession/${filename}";
+  var response = await http.get(Uri.parse(url));
+  return response;
+  
+}
+Future<http.Response> PredictEmotion(String filename) async {
+  String url = "${baseurl}predictEEGEmotion/${filename}";
+  var response = await http.get(Uri.parse(url));
+  return response;
+}
+
+Future<int> AddSession(int supervisorid,int appointmentid) async {
+    String url = "${baseurl}AddSession";
+   var res=await http.post(Uri.parse(url),
+   headers:  {'Content-Type': 'application/json'},
+   body: jsonEncode({'supervisorid':supervisorid,'appointmentid':appointmentid}),
+   );
+    if (res.statusCode == 200) {
+    var body=jsonDecode(res.body);
+    return body['id'];
+   }else{
+    return 0;
+   }
+  } 
+
+  Future<int> AddExperiment(String eegPath,String result,int sessionid ) async {
+    String url = "${baseurl}AddExperiment";
+   var res=await http.post(Uri.parse(url),
+   headers:  {'Content-Type': 'application/json'},
+   body: jsonEncode({'EEGPath':eegPath,'result':result,'sessionid':sessionid}),
+   );
+   if (res.statusCode == 200) {
+    var body=jsonDecode(res.body);
+    return body['id'];
+   }else{
+    return 0;
+   }
+  } 
+  //Get sessions method
+  Future<http.Response> GetSessions(int doctorid,int patientid) async {
+    String url = "${baseurl}GetSessions/$doctorid/$patientid";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return response;
+  }
+  //Get experiments method
+  Future<http.Response> GetExperiments(int sessionid) async {
+    String url = "${baseurl}GetExperiments/$sessionid";
+    var response = await http.get(Uri.parse(url));
+    var jsonResponse = jsonDecode(response.body);
+    return response;
+  }
+
+  Future<dynamic> GetSessionForPatient(int patientid)async{
+    String url = "${baseurl}GetSessionsForPatient/$patientid";
+    var response = await http.get(Uri.parse(url));
+    if(response.statusCode == 200){
+    var jsonResponse = jsonDecode(response.body);
+    return jsonResponse;
+    }else{
+      return null;
+    }
+  }
+ 
 }
 

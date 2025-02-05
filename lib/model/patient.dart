@@ -32,7 +32,7 @@ class Patient extends User {
     height = json['height'];
     weight = json['weight'];
     imgpath = json['imgpath'];
-    id=json['id'];
+    id=int.parse(json['id']);
     
   }
 

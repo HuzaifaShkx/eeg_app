@@ -1,8 +1,10 @@
+import 'package:eeg_app/API/APIHandler.dart';
 import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:flutter/material.dart';
 
 class AddPrescribtion extends StatefulWidget {
-  const AddPrescribtion({super.key});
+  final int appid;
+  const AddPrescribtion({super.key, required this.appid});
 
   @override
   State<AddPrescribtion> createState() => _AddPrescribtionState();
@@ -60,7 +62,7 @@ class _AddPrescribtionState extends State<AddPrescribtion> {
               ),
               SizedBox(height: 20),
               Center(child: Button2(text: "Add Prescribtion", onTap: (){
-                
+                APIHandler().AddPrescribtion(widget.appid, _presController.text);
               }))
             ],
           ),

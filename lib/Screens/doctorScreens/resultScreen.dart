@@ -8,7 +8,10 @@ import 'package:fl_chart/fl_chart.dart';
 
 class Resultscreen extends StatefulWidget {
   final int id;
-  const Resultscreen({super.key, required this.id});
+  final String result;
+  final String eegPath;
+  final int appid;
+  const Resultscreen({super.key, required this.id, required this.result, required this.eegPath, required this.appid});
 
   @override
   State<Resultscreen> createState() => _ResultscreenState();
@@ -23,7 +26,7 @@ class _ResultscreenState extends State<Resultscreen> {
   late List<dynamic> eeg=[];
    Future<void> _getEEGData() async {
     try {
-      eeg = await APIHandler().GetEEGData();
+      eeg = await APIHandler().GetEEGData(widget.eegPath);
       if (eeg.isNotEmpty) {
         _extractEEG(eeg);
       }
@@ -46,13 +49,21 @@ class _ResultscreenState extends State<Resultscreen> {
     TP10=eeg[2];
     
   }
-  
+  late List<String> res;
+  _resultex(){
+    
+    var r=widget.result.split('[')[1];
+    var b=r.split(']')[0];
+    res=b.split(',');
+    print("result :${res}");
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _getPatient(widget.id);
     _getEEGData();
+    _resultex();
     
   }
   double _sliderValue=0.0;
@@ -131,19 +142,19 @@ List<FlSpot> convertToSixteentFlSpot(List<dynamic> yValues) {
         padding: const EdgeInsets.all(8.0),
         child:eeg.isEmpty?Center(child:CircularProgressIndicator()): Column(
           children: [
-             p == null
-                ? CircularProgressIndicator(color: primary)
-                : Text(
-                    "${p!.name}",
-                    style: TextStyle(fontSize: 30, color: primary),
-                  ),
+            //  p == null
+            //     ? CircularProgressIndicator(color: primary)
+            //     : Text(
+            //         "${p!.name}",
+            //         style: TextStyle(fontSize: 30, color: primary),
+            //       ),
             SizedBox(height: 20,),
             Table(
               children: [
                 TableRow(
                   children: [
-                    Text("Emotion :",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
-                    Text("Happy",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
+                    Center(child: Text("Emotion ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),)),
+                    //Text("Happy",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
                   ]
                 ),
               ]),
@@ -152,21 +163,14 @@ List<FlSpot> convertToSixteentFlSpot(List<dynamic> yValues) {
               //decoration: BoxDecoration(color: Colors.amber),
               child: Table(
                 border: TableBorder.all(color: primary),
-                children: [
-                  TableRow(
-                    children: [
-                      Text("True Label",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
-                      Text("EEG Emotion",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
-                      Text("Facial Emotion",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),)
-                    ]
-                  ),
-                  TableRow(
-                    children: [
-                      Text("Happy",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),),
-                      Text("Sad",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),),
-                      Text("Sad",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
-                    ]
-                  ),
+                children: res.map((text) {
+            return TableRow(
+              children: [
+
+                Text(text, textAlign: TextAlign.center),
+              ],
+            );
+          }).toList(),
                   // TableRow(
                   //   children: [
                   //     Text("Duration",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
@@ -179,7 +183,7 @@ List<FlSpot> convertToSixteentFlSpot(List<dynamic> yValues) {
                   //     Text("Take after meal",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
                   //   ]
                   // ),
-                ],
+                
               ),
               ),
               Slider(
@@ -589,7 +593,7 @@ List<FlSpot> convertToSixteentFlSpot(List<dynamic> yValues) {
                 alignment: Alignment.topRight,
                 child: InkWell(
                   onTap: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddPrescribtion()));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddPrescribtion(appid:widget.appid)));
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,

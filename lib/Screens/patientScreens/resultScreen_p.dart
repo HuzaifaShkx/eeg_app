@@ -9,7 +9,9 @@ import 'package:fl_chart/fl_chart.dart';
 
 class ResultscreenP extends StatefulWidget {
   final int id;
-  const ResultscreenP({super.key, required this.id});
+  final String result;
+  final String eegPath;
+  const ResultscreenP({super.key, required this.id, required this.result, required this.eegPath});
 
   @override
   State<ResultscreenP> createState() => _ResultscreenPState();
@@ -21,11 +23,10 @@ class _ResultscreenPState extends State<ResultscreenP> {
     Map<String,dynamic> AF8={};
     Map<String,dynamic> TP9={};
     Map<String,dynamic> TP10={};
-    double _sliderValue=0.0;
   late List<dynamic> eeg=[];
    Future<void> _getEEGData() async {
     try {
-      eeg = await APIHandler().GetEEGData();
+      eeg = await APIHandler().GetEEGData(widget.eegPath);
       if (eeg.isNotEmpty) {
         _extractEEG(eeg);
       }
@@ -34,13 +35,6 @@ class _ResultscreenPState extends State<ResultscreenP> {
       print("Error fetching EEG data: $e");
     }
   }
-  _extractEEG(eeg){
-    AF7=eeg[0];
-    AF8=eeg[1];
-    TP9=eeg[3];
-    TP10=eeg[2];
-    
-  }
   _getPatient(int id) async {
     //get patient data
     p=await APIHandler().GetPatient(id);
@@ -48,14 +42,38 @@ class _ResultscreenPState extends State<ResultscreenP> {
       
     });
   }
+  _extractEEG(eeg){
+    AF7=eeg[0];
+    AF8=eeg[1];
+    TP9=eeg[3];
+    TP10=eeg[2];
+    
+  }
+  late List<String> res;
+  _resultex(){
+    
+    var r=widget.result.split('[')[1];
+    var b=r.split(']')[0];
+    res=b.split(',');
+    print("result :${res}");
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _getPatient(widget.id);
     _getEEGData();
+    _resultex();
+    
   }
-  List<FlSpot> convertToSliderFlSpot(List<dynamic> yValues, double sliderValue) {
+  double _sliderValue=0.0;
+  List<FlSpot> convertToFlSpot(List<dynamic> yValues) {
+  return List<FlSpot>.generate(
+    yValues.length,
+    (index) => FlSpot(index.toDouble(), yValues[index]),
+  );
+}
+List<FlSpot> convertToSliderFlSpot(List<dynamic> yValues, double sliderValue) {
   // Determine the start index based on slider value
   int totalSeconds = 60; // Assuming 60 seconds total
   int pointsPerSecond = 256; // Assuming 256 points per second
@@ -80,30 +98,63 @@ class _ResultscreenPState extends State<ResultscreenP> {
     ),
   );
 }
+
+List<FlSpot> convertToQuarterFlSpot(List<dynamic> yValues) {
+  return List<FlSpot>.generate(
+    (yValues.length / 4).ceil(),
+    (index) => FlSpot(
+      (index * 4).toDouble(), // x-value (index multiplied by 4)
+      yValues[index * 4],    // y-value (element at every 4th index)
+    ),
+  );
+}
+List<FlSpot> convertToEightFlSpot(List<dynamic> yValues) {
+  return List<FlSpot>.generate(
+    (yValues.length / 8).ceil(),
+    (index) => FlSpot(
+      (index * 8).toDouble(), // x-value (index multiplied by 4)
+      yValues[index * 8],    // y-value (element at every 4th index)
+    ),
+  );
+}
+List<FlSpot> convertToSixteentFlSpot(List<dynamic> yValues) {
+  return List<FlSpot>.generate(
+    (yValues.length / 100).ceil(),
+    (index) => FlSpot(
+      (index * 100).toDouble(), // x-value (index multiplied by 4)
+      yValues[index * 100],    // y-value (element at every 4th index)
+    ),
+  );
+}
+
   @override
   Widget build(BuildContext context) {
    // _getPatient(widget.id);
+  //  if(eeg!=null){
+  //  _extractEEG(eeg);
+  //  }
+  print(AF7["Alpha"]);
     return Scaffold(
       appBar: AppBar(title: const Text("Result Screen",style: TextStyle(color: Colors.white),),
       backgroundColor: primary,
       ),
-      body: eeg.isEmpty?Center(child:CircularProgressIndicator()):Padding(
+      body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
+        child:eeg.isEmpty?Center(child:CircularProgressIndicator()): Column(
           children: [
-             p == null
-                ? CircularProgressIndicator(color: primary)
-                : Text(
-                    "${p!.name}",
-                    style: TextStyle(fontSize: 30, color: primary),
-                  ),
+            //  p == null
+            //     ? CircularProgressIndicator(color: primary)
+            //     : Text(
+            //         "${p!.name}",
+            //         style: TextStyle(fontSize: 30, color: primary),
+            //       ),
             SizedBox(height: 20,),
             Table(
               children: [
                 TableRow(
                   children: [
-                    Text("Emotion :",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
-                    Text("Happy",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
+                    Center(child: Text("Emotion ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),)),
+                    //Text("Happy",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
                   ]
                 ),
               ]),
@@ -112,21 +163,14 @@ class _ResultscreenPState extends State<ResultscreenP> {
               //decoration: BoxDecoration(color: Colors.amber),
               child: Table(
                 border: TableBorder.all(color: primary),
-                children: [
-                  TableRow(
-                    children: [
-                      Text("True Label",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
-                      Text("EEG Emotion",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
-                      Text("Facial Emotion",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),)
-                    ]
-                  ),
-                  TableRow(
-                    children: [
-                      Text("Happy",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),),
-                      Text("Sad",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),),
-                      Text("Sad",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
-                    ]
-                  ),
+                children: res.map((text) {
+            return TableRow(
+              children: [
+
+                Text(text, textAlign: TextAlign.center),
+              ],
+            );
+          }).toList(),
                   // TableRow(
                   //   children: [
                   //     Text("Duration",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: primary),),
@@ -139,10 +183,10 @@ class _ResultscreenPState extends State<ResultscreenP> {
                   //     Text("Take after meal",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: primary),)
                   //   ]
                   // ),
-                ],
+                
               ),
               ),
-                           Slider(
+              Slider(
                 label: "${_sliderValue}",
                 divisions: 60,
                 min: 0,
@@ -545,24 +589,89 @@ class _ResultscreenPState extends State<ResultscreenP> {
                 ),
               ),
               
-
-              // Container(
-              //   alignment: Alignment.topRight,
-              //   child: InkWell(
-              //     onTap: (){
-              //       Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddPrescribtion()));
-              //     },
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.center,
-              //       children: [
-              //         Icon(Icons.add_task_outlined,size: 50,color: primary,),
-              //         Text("Add Prescribtion",style: TextStyle(color: primary,),)
-              //       ],
-              //     ),
-              //   ),
-              // )
+              
           ],),
       )
+    );
+  }
+}
+
+class GraphTitle extends StatelessWidget {
+  final String title;
+  
+  const GraphTitle({
+    super.key, required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+       margin: EdgeInsets.all(5),
+       alignment: AlignmentDirectional.center,
+       height: 50,
+       width: 100,
+       decoration: BoxDecoration(color: primary,
+       borderRadius: BorderRadius.circular(10),
+       ),
+       child: Text("${title}",style: TextStyle(color: Colors.white),)),
+    );
+  }
+}
+
+class GraphSingleBand extends StatelessWidget {
+  final Color color;
+  final List<FlSpot> flspot;
+  const GraphSingleBand({super.key, required this.color,  required this.flspot});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+       // margin: EdgeInsets.all(5),
+                      height: 300,
+                        width: 400,
+                      child: LineChart(
+                        duration: Duration(seconds: 5),
+                        LineChartData(
+                         titlesData: FlTitlesData(
+                           leftTitles: AxisTitles(
+                            
+                            axisNameWidget: Text("Amplitude"),
+                            sideTitles: SideTitles(showTitles: true,reservedSize: 44), // Hides Y-axis labels
+                          ),
+                          bottomTitles: AxisTitles(
+                            axisNameWidget: Text("Timepoints"),
+                            sideTitles: SideTitles(showTitles: true,reservedSize: 30), // Hides X-axis labels
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false), // Hides Top axis (optional)
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false), // Hides Right axis (optional)
+                          ),
+                        ),
+                        borderData: FlBorderData(border: Border(bottom: BorderSide(),left: BorderSide())),
+                        lineBarsData: [
+                          LineChartBarData(
+                              
+                            color: color,
+                            spots:flspot ,
+                           
+                            isCurved: true,
+                          
+                            barWidth: 1,
+                            isStrokeCapRound: false,
+                            belowBarData: BarAreaData(show: false),
+                            dotData: FlDotData(show: false),
+                          ),
+                          
+                        ],
+                      )),
+                      
+                    ),
     );
   }
 }

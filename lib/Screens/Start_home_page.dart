@@ -17,7 +17,7 @@ class StartHomePage extends StatelessWidget {
       body: Column(children: [
         
         Container(
-          padding: const EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 50),
           height: 450,
           width: width,
           decoration: BoxDecoration(
@@ -26,7 +26,13 @@ class StartHomePage extends StatelessWidget {
           child:  Column(
           children: [
             Text("Decode Your Emotions\n with EEG Technology",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 22)),
-            Image.asset("assets/images/brain2.png",height: 200,width: 200,),
+            SizedBox(height: 20,),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20)
+              ),
+              child: Image.asset("assets/images/brain2.png",height: 200,width: 200,)),
           ],
         ),),
         const SizedBox(height: 20,),

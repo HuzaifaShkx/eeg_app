@@ -23,9 +23,7 @@ class _Supervisordashboard2State extends State<Supervisordashboard2> {
     
     if(doctorId!=null){
      _patients=await APIHandler().GetNewPatients(doctorId!);
-      setState(() {
-       
-    });
+    
     }
   }
   _getDoctorId() async {
@@ -38,11 +36,15 @@ class _Supervisordashboard2State extends State<Supervisordashboard2> {
   void initState() {
     super.initState();
     _getDoctorId();
+   
     
   }
   @override
   Widget build(BuildContext context) {
-  _getPatient();
+   _getPatient();
+  setState(() {
+    
+  });
     return Scaffold(
       appBar: AppBar(title: Text("Supervisor Dashboard"),),
       drawer: Drawer(
@@ -211,8 +213,9 @@ class _Supervisordashboard2State extends State<Supervisordashboard2> {
                                padding: EdgeInsets.all(10.0),
                                child: Text("${p["name"]}",style: TextStyle(fontSize: 27),),
                              ),
-                            Center(child: Button2(text: "Start Session", onTap: (){
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SupervisorUploadScreen()));
+                            Center(child: Button2(text: "Start Session", onTap: () async {
+                              var res=await APIHandler().AddSession(widget.supervisor.id!, p['appid']);
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>SupervisorUploadScreen(supervisorid:widget.supervisor.id!,appid:p['appid'],sessionid:  res)));
                             })),
                             SizedBox(height: 10,),
                              Container(
