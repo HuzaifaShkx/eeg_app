@@ -12,7 +12,7 @@ import 'package:eeg_app/model/user.dart';
 import 'package:http/http.dart' as http;
 
 class APIHandler{
-  String baseurl="http://172.16.14.147:5000/";
+  String baseurl="http://192.168.0.123:5000/";
   String baseurl2="http://192.168.43.189:5001/";
   Future<String> login(String email,String password) async {
     String url = "${baseurl}login";
@@ -228,7 +228,7 @@ Future<http.Response> AddPrescribtion(int appId,String prescription) async {
    
     data['prescribtion'] = prescription;
     data['appId'] = appId;
-    data['appStatus'] = true;
+    data['appStatus'] = 'true';
    
     
   String json=jsonEncode(data);

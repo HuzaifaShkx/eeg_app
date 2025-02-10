@@ -61,8 +61,14 @@ class _AddPrescribtionState extends State<AddPrescribtion> {
                 ),
               ),
               SizedBox(height: 20),
-              Center(child: Button2(text: "Add Prescribtion", onTap: (){
-                APIHandler().AddPrescribtion(widget.appid, _presController.text);
+              Center(child: Button2(text: "Add Prescribtion", onTap: ()async{
+               var res=await APIHandler().AddPrescribtion(widget.appid, _presController.text);
+               if(res.statusCode==200){
+                 Navigator.pop(context);
+                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Prescribtion Added Successfully"),));
+               }else{
+                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to add prescribtion"),));
+               }
               }))
             ],
           ),

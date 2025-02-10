@@ -65,7 +65,9 @@ class _DoctorPatientScreenState extends State<DoctorPatientScreen> {
                                       padding: EdgeInsets.all(10.0),
                                       child: CircleAvatar(
                                         radius: 40,
-                                        backgroundImage: AssetImage("assets/images/person.png"),
+                                        backgroundImage: patients[index].imgpath != null? 
+                                         NetworkImage("${APIHandler().baseurl}/image/${patients[index].imgpath}") as ImageProvider
+                                        : AssetImage('assets/images/person.png'),
                                       ),
                                     ),
                                     Text("${patients[index].name}"),

@@ -1,8 +1,11 @@
 import 'package:eeg_app/API/APIHandler.dart';
+import 'package:eeg_app/Custom%20Widget/button1.dart';
+import 'package:eeg_app/Custom%20Widget/button2.dart';
 import 'package:eeg_app/Custom%20Widget/color.dart';
 import 'package:eeg_app/Screens/SignupScreens/supervisorSignup.dart';
 import 'package:eeg_app/Screens/doctorScreens/doctor_appointments.dart';
 import 'package:eeg_app/Screens/doctorScreens/doctor_patients.dart';
+import 'package:eeg_app/Screens/doctorScreens/patient_detail.dart';
 import 'package:eeg_app/Screens/doctorScreens/resultScreen.dart';
 import 'package:eeg_app/Screens/loginscreen.dart';
 import 'package:eeg_app/model/doctor.dart';
@@ -152,31 +155,31 @@ class _DoctorDashState extends State<DoctorDash> {
                 height: 20,
               ),
               // Search box code
-              Container(
-                width: 250,
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(2, 3),
-                  )
-                ], color: Colors.white, borderRadius: BorderRadius.circular(10)),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search),
-                    SizedBox(
-                      width: 200,
-                      child: TextFormField(
-                          controller: _searchController,
-                          decoration: const InputDecoration(
-                            hintText: "Search patient",
-                          ),
-                          onChanged: (value) {}),
-                    )
-                  ],
-                ),
-              ),
+              // Container(
+              //   width: 250,
+              //   decoration: BoxDecoration(boxShadow: [
+              //     BoxShadow(
+              //       color: Colors.grey.withOpacity(0.2),
+              //       spreadRadius: 2,
+              //       blurRadius: 5,
+              //       offset: const Offset(2, 3),
+              //     )
+              //   ], color: Colors.white, borderRadius: BorderRadius.circular(10)),
+              //   child: Row(
+              //     children: [
+              //       const Icon(Icons.search),
+              //       SizedBox(
+              //         width: 200,
+              //         child: TextFormField(
+              //             controller: _searchController,
+              //             decoration: const InputDecoration(
+              //               hintText: "Search patient",
+              //             ),
+              //             onChanged: (value) {}),
+              //       )
+              //     ],
+              //   ),
+              // ),
               const SizedBox(
                 height: 10,
               ),
@@ -216,10 +219,20 @@ class _DoctorDashState extends State<DoctorDash> {
                 ),
                 Padding(
                   padding: EdgeInsets.all(10.0),
-                  child: Text("${p["name"]}"),
+                  child: Text("${p["name"]}",style: TextStyle(fontSize: 20),),
+                ),
+                Center(
+                  child: Button2(text: "View Patient",onTap: (){
+                     Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (context) => PatientDetailScreen(
+                                              id: int.parse(p["id"]),
+                                              doctorid: widget.doctor.id!,
+                                            ),
+                                          ));
+                  },),
                 ),
                 FutureBuilder(
-                  future: _getAppointmentDateTime(widget.doctor.id!, p['id']),
+                  future: _getAppointmentDateTime(widget.doctor.id!,int.parse(p['id'])),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Container(

@@ -34,7 +34,8 @@ class _ExperimentScreenState extends State<ExperimentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Experiments"),),
-      body: SafeArea(
+      body: experiments.length==0?Center(child: Text("No Experiments"),):
+      SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView.builder(
